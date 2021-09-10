@@ -163,9 +163,10 @@
             $pos_x = dungeon_start_x;
             $pos_y = dungeon_start_y;
 
+            // START DUNGEON
             foreach ( dungeon_start_elements as $key => $value )
             {
-                $curr_element = $this->elements[$value];
+                $curr_element = unserialize( serialize( $this->elements[$value] ) );
 
                 $this->place_tile( $curr_element, $pos_x, $pos_y );
     
@@ -178,6 +179,7 @@
                 }
             }
 
+            // GENERATING DUNGEON
             foreach ( $this->get_sections() as $key => $section )
             {
                 $this->place_tile( $section, $pos_x, $pos_y );
@@ -210,7 +212,7 @@
 
         function get_sections()
         {
-            $section_count = random_int(1, 12);
+            $section_count = array_sum($this->roll("1D12"));
 
             if ($section_count <= 3) $section_count = 1;
             if ($section_count >= 4 && $section_count <= 8) $section_count = 2;
@@ -218,10 +220,11 @@
 
             $sections = array( $section_count );
 
-            for ($i=0; $i < $section_count; $i++) { 
+            for ($i=0; $i < $section_count; $i++)
+            { 
                 $section = unserialize( serialize( $this->elements["corridor_left_right"] ) );
 
-                $feature = random_int(1, 12) + random_int(1, 12);
+                $feature = array_sum($this->roll("2D12"));
 
                 if ($feature <= 5) $section->setFeature( "M" );
                 if ($feature >= 6 && $section_count <= 14) $section->setFeature( "N" );
@@ -269,6 +272,35 @@
             }
     
             return $placeable;
+        }
+
+        /**
+         * Roll the dice
+         *
+         * Here's an example:<br />
+         * <br />
+         * $throws = roll("5d6");<br />
+         * echo array_sum($throws)." [".implode(", ", $throws)."]";<br />
+         * <br />
+         * Output: 17 [1, 3, 6, 2, 5]
+         *
+         * @param string $notation - the dice notation e.g. 1d6, 4d6, etc.
+         * @author sg
+         * @return array - an array of integer values (the throws)
+         */
+        function roll($notation)
+        {
+            $throws = array();
+
+            if(preg_match("/(\d+)?[dDwW](\d+)+/", $notation, $dice))
+            {
+                for($throw = 0; $throw < (!$dice[1] ? 1 : $dice[1]); $throw++)
+                {
+                    array_push($throws, random_int(1, $dice[2]));
+                }
+            }
+
+            return $throws;
         }
     }
 
