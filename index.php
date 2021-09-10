@@ -1,16 +1,3 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-
-    <title>Hello, world!</title>
-  </head>
-  <body>
 <?php
     const dungeon_size = 100;
     const dungeon_start_x = 49;
@@ -20,7 +7,7 @@
     const tile_alignment_horizontal = 0;
     const tile_alignment_vertical = 1;
 
-    const nothing = "&blk14;";
+    const nothing = ".";
     const normal_floor = "_";
     const t_junction = "T";
     const staircase_up_down = "-";
@@ -288,7 +275,3 @@
     $ahqdg = new dungeon_generator();
 
 ?>
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
-  </body>
-</html>
