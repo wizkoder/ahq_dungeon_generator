@@ -1,4 +1,67 @@
 <?php
+    require_once "app/point.php";
+    require_once "app/element.php";
+    require_once "app/dungeon.php";
+    require_once "app/dice.php";
+
+    // init dungeon
+    $dice = new dice();
+    $dungeon = new dungeon( 100, 100, dungeon_type_nothing );
+    $point = new point( 49, 0 ); // start point, every $dungeon->place_element call, returns the calculated point for the next element
+
+    // base dungeon elements
+    $point = $dungeon->place_element( new element( 2, 2, element_type_staircase, element_alignment_vertical ), $point );
+    $point = $dungeon->place_element( new element( 2, 10, element_type_floor, element_alignment_vertical ), $point );
+    $point = $dungeon->place_element( new element( 2, 2, element_type_t_junction, element_alignment_horizontal ), $point );
+
+    /**
+    * !!! START generate dungeon (later as loop?) !!!
+    */
+
+    // first step passage
+    $passage_lenght = 5;
+
+    $roll = array_sum( $dice->roll( "1D12" ) );
+
+    if ($roll >= 4 && $roll <= 8) $passage_lenght = 10;
+    if ($roll >= 9) $passage_lenght = 15;
+    
+    $passage = new element( $passage_lenght, 2, element_type_floor, element_alignment_horizontal );
+
+    // second step passage function
+    $passage->roll_feature();
+
+    // place passage
+    $point = $dungeon->place_element( $passage, $point );
+
+    // if passage has room(s), place it
+
+
+
+    // third step passage end
+    $passage_end = new element( 2, 2, element_type_t_junction, element_alignment_vertical );
+
+    $roll = array_sum( $dice->roll( "2D12" ) );
+
+    if ($roll >= 4 && $roll <= 8) $passage_end = new element( 2, 2, element_type_dead_end, element_alignment_horizontal );
+    if ($roll >= 9 && $roll <= 11) $passage_end = new element( 2, 2, element_type_right_turn, element_alignment_vertical );
+    if ($roll >= 12 && $roll <= 14) $passage_end = new element( 2, 2, element_type_t_junction, element_alignment_vertical );
+    if ($roll >= 15 && $roll <= 17) $passage_end = new element( 2, 2, element_type_left_turn, element_alignment_vertical );
+    if ($roll >= 18 && $roll <= 19) $passage_end = new element( 2, 2, element_type_stairs_down, element_alignment_horizontal );
+    if ($roll >= 20 && $roll <= 22) $passage_end = new element( 2, 2, element_type_stairs_out, element_alignment_horizontal );
+
+    $point = $dungeon->place_element( $passage_end, $point );
+
+    /**
+    * !!! END generate dungeon (later as loop?) !!!
+    */
+
+    // draw dungeon
+    $dungeon->draw();
+
+?>
+<?php
+    /* OLD code
     const dungeon_size = 100;
     const dungeon_start_x = 49;
     const dungeon_start_y = 0;
@@ -388,7 +451,7 @@
          * @author sg
          * @return array - an array of integer values (the throws)
          */
-        function roll( $notation )
+        /*function roll( $notation )
         {
             $throws = array();
 
@@ -405,5 +468,5 @@
     }
 
     $ahqdg = new dungeon_generator();
-
+    */
 ?>
