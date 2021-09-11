@@ -2,7 +2,7 @@
     const dungeon_size = 100;
     const dungeon_start_x = 49;
     const dungeon_start_y = 0;
-    const dungeon_start_elements = [ "staircase_vertical", "corridor_vertical", "corridor_vertical", "t_junction_horizontal" ];
+    const dungeon_start_elements = [ "staircase_vertical", "corridor_2_vertical", "t_junction_horizontal" ];
 
     const element_alignment_horizontal = 0;
     const element_alignment_vertical = 1;
@@ -11,6 +11,7 @@
     const staircase = "s";
     const floor = "_";
     const t_junction = "t";
+    const dead_end = "e";
 
     class element
     {
@@ -28,7 +29,7 @@
             $this->setAlignment( $alignment );
 
             $this->setType( $type );
-            $this->setFeature( $type );
+            $this->setFeature( "Nothing" );
 
             for ( $y = 0; $y < $this->height; $y++ )
             {
@@ -86,47 +87,58 @@
 
         function setFeature( string $feature )
         {
+            $this->feature = $feature;
+
             // Wandering Monsters
-            if ( $feature == "M" )
+            if ( $feature == "Wandering Monsters" )
             {
                 $this->tiles[ random_int( 1, $this->height ) - 1 ][ random_int( 1, $this->width ) - 1 ] = "M";
             }
 
             // Nothing
-            if ( $feature == "N" )
+            if ( $feature == "Nothing" )
             {
                 // draw nothing :-)
             }
 
             // 1 Door
-            if ( $feature == "1" )
+            if ( $feature == "1 Door" )
             {
                 $this->tiles[ random_int( 1, $this->height ) - 1 ][ random_int( 1, $this->width ) - 1 ] = "D";
             }
 
             // 2 Doors
-            if ( $feature == "2" )
+            if ( $feature == "2 Doors" )
             {
-                $door1x = random_int( 1, $this->width ) - 1;
-                $door1y = random_int( 1, $this->height ) - 1;
-
-                $this->tiles[ $door1y ][ $door1x ] = "D";
-
-                do
+                if ($this->alignment == element_alignment_horizontal)
                 {
-                    $door2x = random_int( 1, $this->width ) - 1;
-                    $door2y = random_int( 1, $this->height ) - 1;
-                } while ( $door2x == $door1x && $door2y == $door1y );
-
-                $this->tiles[ $door2y ][ $door2x ] = "D";
+                    $this->tiles[ 0 ][ random_int( 1, $this->width ) - 1 ] = "D";
+                    $this->tiles[ 1 ][ random_int( 1, $this->width ) - 1 ] = "D";
+                }
+                else
+                {
+                    $this->tiles[ random_int( 1, $this->height ) - 1 ][ 0 ] = "D";
+                    $this->tiles[ random_int( 1, $this->height ) - 1 ][ 1 ] = "D";
+                }
             }
-
-            $this->feature = $feature;
         }
 
         function getFeature()
         {
             return $this->feature;
+        }
+
+        function rollFeature()
+        {
+            $dice = new dice();
+
+            $roll = array_sum( $dice->roll( "2D12" ) );
+
+            if ( $roll <= 5 ) $this->setFeature( "Wandering Monsters" );        // Wandering Monsters
+            if ( $roll >= 6 && $roll <= 14 ) $this->setFeature( "Nothing" );    // Nothing
+            if ( $roll >= 15 && $roll <= 19 ) $this->setFeature( "1 Door" );    // 1 Door
+            if ( $roll >= 20 && $roll <= 21 ) $this->setFeature( "2 Doors" );   // 2 Doors
+            if ( $roll >= 22 ) $this->setFeature( "Wandering Monsters" );       // Wandering Monsters
         }
     }
 
@@ -152,12 +164,26 @@
             $new_element = new element( 2, 2, element_alignment_vertical, staircase );
             $this->elements["staircase_vertical"] = $new_element;
 
-            // corridor
+            // corridor 1 section
             $new_element = new element( 5, 2, element_alignment_horizontal, floor );
-            $this->elements["corridor_horizontal"] = $new_element;
+            $this->elements["corridor_1_horizontal"] = $new_element;
 
             $new_element = new element( 2, 5, element_alignment_vertical, floor );
-            $this->elements["corridor_vertical"] = $new_element;
+            $this->elements["corridor_1_vertical"] = $new_element;
+
+            // corridor 2 sections
+            $new_element = new element( 10, 2, element_alignment_horizontal, floor );
+            $this->elements["corridor_2_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 10, element_alignment_vertical, floor );
+            $this->elements["corridor_2_vertical"] = $new_element;
+
+            // corridor 3 sections
+            $new_element = new element( 15, 2, element_alignment_horizontal, floor );
+            $this->elements["corridor_3_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 15, element_alignment_vertical, floor );
+            $this->elements["corridor_3_vertical"] = $new_element;
 
             // t_junction
             $new_element = new element( 2, 2, element_alignment_horizontal, t_junction );
@@ -165,6 +191,41 @@
 
             $new_element = new element( 2, 2, element_alignment_vertical, t_junction );
             $this->elements["t_junction_vertical"] = $new_element;
+
+            // dead_end
+            $new_element = new element( 2, 2, element_alignment_horizontal, dead_end );
+            $this->elements["dead_end_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 2, element_alignment_vertical, dead_end );
+            $this->elements["dead_end_vertical"] = $new_element;
+
+            // right_turn
+            $new_element = new element( 2, 2, element_alignment_horizontal, floor );
+            $this->elements["right_turn_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 2, element_alignment_vertical, floor );
+            $this->elements["right_turn_vertical"] = $new_element;
+
+            // left_turn
+            $new_element = new element( 2, 2, element_alignment_horizontal, floor );
+            $this->elements["left_turn_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 2, element_alignment_vertical, floor );
+            $this->elements["left_turn_vertical"] = $new_element;
+
+            // stairs_down
+            $new_element = new element( 2, 2, element_alignment_horizontal, staircase );
+            $this->elements["stairs_down_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 2, element_alignment_vertical, staircase );
+            $this->elements["stairs_down_vertical"] = $new_element;
+
+            // stairs_out
+            $new_element = new element( 2, 2, element_alignment_horizontal, staircase );
+            $this->elements["stairs_out_horizontal"] = $new_element;
+
+            $new_element = new element( 2, 2, element_alignment_vertical, staircase );
+            $this->elements["stairs_out_vertical"] = $new_element;
         }
 
         function init_dungeon()
@@ -200,51 +261,68 @@
             }
 
             // GENERATING DUNGEON
-            foreach ( $this->get_sections() as $key => $section )
-            {
-                $this->place_element( $section, $pos_x, $pos_y );
+            $passage = $this->get_passage();
 
-                // DOOR(S)?
-                if ( $section->getFeature() == "1" || $section->getFeature() == "2" )
-                {
-                    // set room(s)
-                }
-                
-                if ( $section->getAlignment() == element_alignment_horizontal )
-                {
-                    $pos_x = $pos_x + $section->getWidth();
-                }
-                else {
-                    $pos_y = $pos_y + $section->getHeight();
-                }
+            $placeable = $this->place_element( $passage, $pos_x, $pos_y );
+
+            // DOOR(S)?
+            if ( $passage->getFeature() == "1 Door" || $passage->getFeature() == "2 Doors" )
+            {
+                // set room(s)
             }
+            
+            if ( $passage->getAlignment() == element_alignment_horizontal )
+            {
+                $pos_x = $pos_x + $passage->getWidth();
+            }
+            else {
+                $pos_y = $pos_y + $passage->getHeight();
+            }
+
+            $placeable = $this->place_element( $this->get_passage_end( $passage->getAlignment() ), $pos_x, $pos_y );
         }
 
-        function get_sections()
+        function get_passage()
         {
-            $section_count = array_sum( $this->roll( "1D12" ) );
+            $dice = new dice();
 
-            if ($section_count <= 3) $section_count = 1;
-            if ($section_count >= 4 && $section_count <= 8) $section_count = 2;
-            if ($section_count >= 9) $section_count = 3;
+            $roll = array_sum( $dice->roll( "1D12" ) );
 
-            $sections = array( $section_count );
+            if ($roll <= 3) $passage_lenght = 1;
+            if ($roll >= 4 && $roll <= 8) $passage_lenght = 2;
+            if ($roll >= 9) $passage_lenght = 3;
 
-            for ( $i=0; $i < $section_count; $i++ )
-            { 
-                $section = unserialize( serialize( $this->elements["corridor_horizontal"] ) );
+            $passage = unserialize( serialize( $this->elements["corridor_".$passage_lenght."_horizontal"] ) );
+            $passage->rollFeature();
 
-                $feature = array_sum( $this->roll( "2D12" ) );
+            return $passage;
+        }
 
-                if ( $feature <= 5 || $feature >= 22 ) $section->setFeature( "M" );     // Wandering Monsters
-                if ( $feature >= 6 && $feature <= 14 ) $section->setFeature( "N" );     // Nothing
-                if ( $feature >= 15 && $feature <= 19 ) $section->setFeature( "1" );    // 1 Door
-                if ( $feature >= 20 && $feature <= 21 ) $section->setFeature( "2" );    // 2 Doors
+        function get_passage_end(int $element_alignment)
+        {
+            $dice = new dice();
 
-                $sections[$i] = $section;
+            $roll = array_sum( $dice->roll( "2D12" ) );
+
+            if ($element_alignment == element_alignment_horizontal)
+            {
+                $element_alignment = "horizontal";
+            }
+            else
+            {
+                $element_alignment = "vertical";
             }
 
-            return $sections;
+            if ($roll <= 3) $passage = unserialize( serialize( $this->elements["t_junction_".$element_alignment] ) );
+            if ($roll >= 4 && $roll <= 8) $passage = unserialize( serialize( $this->elements["dead_end_".$element_alignment] ) );
+            if ($roll >= 9 && $roll <= 11) $passage = unserialize( serialize( $this->elements["right_turn_".$element_alignment] ) );
+            if ($roll >= 12 && $roll <= 14) $passage = unserialize( serialize( $this->elements["t_junction_".$element_alignment] ) );
+            if ($roll >= 15 && $roll <= 17) $passage = unserialize( serialize( $this->elements["left_turn_".$element_alignment] ) );
+            if ($roll >= 18 && $roll <= 19) $passage = unserialize( serialize( $this->elements["stairs_down_".$element_alignment] ) );
+            if ($roll >= 20 && $roll <= 22) $passage = unserialize( serialize( $this->elements["stairs_out_".$element_alignment] ) );
+            if ($roll >= 23) $passage = unserialize( serialize( $this->elements["t_junction_".$element_alignment] ) );
+
+            return $passage;
         }
 
         function show_dungeon()
@@ -292,7 +370,10 @@
     
             return $placeable;
         }
+    }
 
+    class dice
+    {
         /**
          * Roll the dice
          *
@@ -324,4 +405,5 @@
     }
 
     $ahqdg = new dungeon_generator();
+
 ?>
