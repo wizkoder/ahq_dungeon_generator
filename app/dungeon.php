@@ -69,7 +69,7 @@ class dungeon
                 }
             }
             
-            if ( $element->get_alignment() == element_alignment_horizontal )
+            if ( $element->get_alignment() == element_horizontal )
             {
                 $point->set_pos_x( $point->get_pos_x() + $element->get_width() );
             }

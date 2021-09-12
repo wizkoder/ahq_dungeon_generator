@@ -1,36 +1,43 @@
 <?php
+// element alignment
+const element_horizontal = 0;
+const element_vertical = 1;
 
-const element_alignment_horizontal = 0;
-const element_alignment_vertical = 1;
-
-const element_type_staircase = "s";
-const element_type_floor = "_";
-const element_type_t_junction = "t";
-const element_type_dead_end = "e";
-const element_type_right_turn = "r";
-const element_type_left_turn = "l";
-const element_type_stairs_down = "s";
-const element_type_stairs_out = "u";
+// elements [ name, widht, height, symbol ]
+const element_passage_one = [ "Passage", 5, 2, "_" ];
+const element_passage_two = [ "Passage", 10, 2, "_" ];
+const element_passage_three = [ "Passage", 15, 2, "_" ];
+const element_t_junction = [ "T-Junction", 2, 2, "t" ];
+const element_dead_end = [ "Dead End", 5, 2, "e" ];
+const element_corner_right = [ "Corner", 2, 2, "r" ];
+const element_corner_left = [ "Corner", 2, 2, "l" ];
+const element_stairs_down = [ "Stairs", 2, 2, "s" ];
+const element_stairs_out = [ "Stairs", 2, 2, "u" ];
+const element_room_large = [ "Room", 10, 5, "-" ];
+const element_room_small = [ "Room", 5, 5, "-" ];
+const element_room_revolving = [ "Room", 5, 5, "-" ];
 
 class element
 {
     // Properties
+    public string $type;
     public int $width;
     public int $height;
     public int $alignment;
     public array $tiles;
     public string $feature;
 
-    function __construct( int $width, int $height, string $type, int $alignment )
+    function __construct( array $element, int $alignment )
     {
-        $this->width = $width;
-        $this->height = $height;
+        $this->type = $element[ 0 ];
+        $this->width = $element[ $alignment == element_horizontal ? 1 : 2 ];
+        $this->height = $element[ $alignment == element_horizontal ? 2 : 1 ];
 
         for ( $y = 0; $y < $this->height; $y++ )
         {
             for ( $x = 0; $x < $this->width; $x++ )
             {
-                $this->tiles[ $y ][ $x ] = $type;
+                $this->tiles[ $y ][ $x ] = $element[ 3 ];
             }
         }
 
@@ -38,6 +45,16 @@ class element
     }
 
     // Methods
+    function set_type( int $type )
+    {
+        $this->type = $type;
+    }
+
+    function get_type()
+    {
+        return $this->type;
+    }
+
     function set_width( int $width )
     {
         $this->width = $width;
@@ -116,7 +133,7 @@ class element
         {
             $this->feature = "2 Doors";
 
-            if ($this->alignment == element_alignment_horizontal)
+            if ($this->alignment == element_horizontal)
             {
                 $this->tiles[ 0 ][ random_int( 1, $this->width ) - 1 ] = "D";
                 $this->tiles[ 1 ][ random_int( 1, $this->width ) - 1 ] = "D";
