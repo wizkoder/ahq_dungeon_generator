@@ -6,61 +6,64 @@
 
     // init dungeon
     $dice = new dice();
-    $dungeon = new dungeon( 100, 100, dungeon_type_nothing );
-    $point = new point( 49, 0 ); // start point, every $dungeon->place_element call, returns the calculated point for the next element
+    $dungeon = new dungeon( 200, 200, dungeon_type_nothing );
+    $point = new point( 99, 99, heading_south ); // start point, every $dungeon->place_element call, returns the calculated point for the next element
 
     // base dungeon elements
-    $point = $dungeon->place_element( new element( element_stairs_down, element_vertical ), $point );
-    $point = $dungeon->place_element( new element( element_passage_two, element_vertical ), $point );
-    $point = $dungeon->place_element( new element( element_t_junction, element_horizontal ), $point );
+    $point = $dungeon->place_element( new element( element_stairs_start, $point->get_direction() ), $point );
+    $point = $dungeon->place_element( new element( element_passage_two, $point->get_direction() ), $point );
+    $point = $dungeon->place_element( new element( element_t_junction, $point->get_direction() ), $point );
 
     /**
-    * !!! START generate dungeon (later as loop?) !!!
+    * !!! START generate dungeon !!!
     */
 
-    // first step passage
-    $passage = new element( element_passage_one, element_horizontal );
-
-    $roll = array_sum( $dice->roll( "1D12" ) );
-
-    if ($roll >= 4 && $roll <= 8) $passage = new element( element_passage_two, element_horizontal );
-    if ($roll >= 9) $passage = new element( element_passage_three, element_horizontal );
-    
-    // second step passage function
-    $passage->roll_feature();
-
-    // place passage
-    $point = $dungeon->place_element( $passage, $point );
-
-    // if passage has room(s), place it
-    if ( $passage->get_feature() == "1 Door" || $passage->get_feature() == "2 Doors" )
+    do
     {
-        $alignment = $passage->get_alignment();
+        // first step passage
+        $passage = new element( element_passage_one, $point->get_direction() );
+
+        $roll = array_sum( $dice->roll( "1D12" ) );
+
+        if ($roll >= 4 && $roll <= 8) $passage = new element( element_passage_two, $point->get_direction() );
+        if ($roll >= 9) $passage = new element( element_passage_three, $point->get_direction() );
         
+        // second step passage function
+        $passage->roll_feature();
+
+        // place passage
+        $point = $dungeon->place_element( $passage, $point );
+
+        // if passage has room(s), place it
+        if ( $passage->get_feature() == "1 Door" || $passage->get_feature() == "2 Doors" )
+        {
+            $direction = $passage->get_direction();
+            
+        }
+
+
+        // third step passage end
+        $passage_end = new element( element_t_junction, $point->get_direction() );
+
+        $roll = array_sum( $dice->roll( "2D12" ) );
+
+        if ($roll >= 4 && $roll <= 8) $passage_end = new element( element_dead_end, $point->get_direction() );
+        if ($roll >= 9 && $roll <= 11) $passage_end = new element( element_corner_right, $point->get_direction() );
+        if ($roll >= 12 && $roll <= 14) $passage_end = new element( element_t_junction, $point->get_direction() );
+        if ($roll >= 15 && $roll <= 17) $passage_end = new element( element_corner_left, $point->get_direction() );
+        if ($roll >= 18 && $roll <= 19) $passage_end = new element( element_stairs_down, $point->get_direction() );
+        if ($roll >= 20 && $roll <= 22) $passage_end = new element( element_stairs_out, $point->get_direction() );
+
+        $point = $dungeon->place_element( $passage_end, $point );
     }
-
-
-    // third step passage end
-    $passage_end = new element( element_t_junction, element_vertical );
-
-    $roll = array_sum( $dice->roll( "2D12" ) );
-
-    if ($roll >= 4 && $roll <= 8) $passage_end = new element( element_dead_end, element_horizontal );
-    if ($roll >= 9 && $roll <= 11) $passage_end = new element( element_corner_right, element_vertical );
-    if ($roll >= 12 && $roll <= 14) $passage_end = new element( element_t_junction, element_vertical );
-    if ($roll >= 15 && $roll <= 17) $passage_end = new element( element_corner_left, element_vertical );
-    if ($roll >= 18 && $roll <= 19) $passage_end = new element( element_stairs_down, element_horizontal );
-    if ($roll >= 20 && $roll <= 22) $passage_end = new element( element_stairs_out, element_horizontal );
-
-    $point = $dungeon->place_element( $passage_end, $point );
+    while ($point->get_direction() != heading_end);
 
     /**
-    * !!! END generate dungeon (later as loop?) !!!
+    * !!! END generate dungeon !!!
     */
 
     // draw dungeon
     $dungeon->draw();
-
 ?>
 <?php
     /* OLD code
