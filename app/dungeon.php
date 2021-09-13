@@ -185,6 +185,7 @@ class dungeon
 
             return $point;
         }
+
         /*
         $placeable = true;
 
@@ -208,104 +209,61 @@ class dungeon
                     $this->grid[ $y + $point->get_pos_y() ][ $x + $point->get_pos_x() ] = $element->get_tile( $x, $y );
                 }
             }
-
-            if ( $element->get_type() == "T-Junction" )
-            {
-                if ( $point->get_direction() == heading_north )
-                {
-                    $point->set_direction( heading_east );
-                }
-
-                if ( $point->get_direction() == heading_east )
-                {
-                    $point->set_direction( heading_south );
-                }
-
-                if ( $point->get_direction() == heading_south )
-                {
-                    $point->set_direction( heading_west );
-                }
-
-                if ( $point->get_direction() == heading_west )
-                {
-                    $point->set_direction( heading_north );
-                }
-            }
-
-            if ( $element->get_type() == "Corner Right" )
-            {
-                if ( $point->get_direction() == heading_north )
-                {
-                    $point->set_direction( heading_east );
-                }
-
-                if ( $point->get_direction() == heading_east )
-                {
-                    $point->set_direction( heading_south );
-                }
-
-                if ( $point->get_direction() == heading_south )
-                {
-                    $point->set_direction( heading_west );
-                }
-
-                if ( $point->get_direction() == heading_west )
-                {
-                    $point->set_direction( heading_north );
-                }
-            }
-
-            if ( $element->get_type() == "Corner Left" )
-            {
-                if ( $point->get_direction() == heading_north )
-                {
-                    $point->set_direction( heading_west );
-                }
-
-                if ( $point->get_direction() == heading_east )
-                {
-                    $point->set_direction( heading_north );
-                }
-
-                if ( $point->get_direction() == heading_south )
-                {
-                    $point->set_direction( heading_east );
-                }
-
-                if ( $point->get_direction() == heading_west )
-                {
-                    $point->set_direction( heading_south );
-                }
-            }
-            
-            if ( $point->get_direction() == heading_west || $point->get_direction() == heading_east )
-            {
-                $point->set_pos_x( $point->get_pos_x() + $element->get_width() );
-            }
-            else {
-                $point->set_pos_y( $point->get_pos_y() + $element->get_height() );
-            }
         }
 
-        return $point;
+        return $placeable;
         */
     }
 
     function draw()
     {
+        $matrix = $this->grid;
+        $matrix = $this->array_remove_unique_lines( $matrix );
+        $matrix = $this->array_transpose( $matrix );
+        $matrix = $this->array_remove_unique_lines( $matrix );
+        $matrix = $this->array_transpose( $matrix );
+
         echo "<p  style='font-family: monospace, monospace'>";
 
-        for ( $y = 0; $y < $this->height; $y++ )
+        foreach ( $matrix as $row )
         {
-            for ( $x = 0; $x < $this->width; $x++ )
+            foreach ( $row as $cell )
             {
-                echo $this->grid[ $y ][ $x ];
+                echo $cell;
             }
 
             echo "<br />";
         }
 
         echo "</p>";
+    }
+
+    function array_remove_unique_lines( array $array )
+    {
+        foreach ( $array as $row_nr => $row )
+        {
+            if ( count( array_unique( $row ) ) === 1 )
+            {
+                unset( $array[ $row_nr ] );
+            }
+        }
+
+        return $array;
+    }
+
+    function array_transpose( array $array )
+    {
+        $out = array();
+
+        foreach ( $array as $key => $subarr )
+        {
+            foreach ( $subarr as $subkey => $subvalue )
+            {
+                $out[$subkey][$key] = $subvalue;
+            }
+        }
+
+        return $out;
     }
 }
 ?>
