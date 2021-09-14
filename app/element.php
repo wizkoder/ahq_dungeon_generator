@@ -3,7 +3,8 @@
 const element_passage_one = [ "Passage", 5, 2, "_" ];
 const element_passage_two = [ "Passage", 10, 2, "_" ];
 const element_passage_three = [ "Passage", 15, 2, "_" ];
-const element_t_junction = [ "T-Junction", 2, 2, "t" ];
+const element_t_junction_right = [ "T-Junction Right", 2, 2, "t" ];
+const element_t_junction_left = [ "T-Junction Left", 2, 2, "t" ];
 const element_dead_end = [ "Dead End", 5, 2, "e" ];
 const element_corner_right = [ "Corner Right", 2, 2, "r" ];
 const element_corner_left = [ "Corner Left", 2, 2, "l" ];
