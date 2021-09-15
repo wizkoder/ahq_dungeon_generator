@@ -43,7 +43,7 @@
     $element = new element( element_t_junction, heading_south );
     $dungeon->place_element( $element, $point );
     
-    $points[] = new point( dungeon_start_x-2, dungeon_start_y+12, heading_west );
+    $points[] = new point( dungeon_start_x-1, dungeon_start_y+12, heading_west );
     $points[] = new point( dungeon_start_x+2, dungeon_start_y+12, heading_east );
 
     $again = true;

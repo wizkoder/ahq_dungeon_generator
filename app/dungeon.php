@@ -98,8 +98,6 @@ class dungeon
             for ( $x = 0; $x < $element->get_width(); $x++ )
             {
                 $this->grid[ $xtest ][ $ytest ] = $element->get_symbol();
-
-                //echo "x:".$xtest."/y:".$ytest."/symbol:".$element->get_symbol()."<br/>";
                 
                 $xtest = $xtest + $offset_x;
                 $ytest = $ytest + $offset_y;
