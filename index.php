@@ -1,165 +1,83 @@
 <?php
+    // elements [ name, height, width, symbol ]
+    const element_passage_one = [ "Passage One", 5, 2, "_" ];
+    const element_passage_two = [ "Passage Two", 10, 2, "_" ];
+    const element_passage_three = [ "Passage Three", 15, 2, "_" ];
+    const element_t_junction = [ "T-Junction", 2, 2, "t" ];
+    const element_dead_end = [ "Dead End", 5, 2, "e" ];
+    const element_corner_right = [ "Corner Right", 2, 2, "r" ];
+    const element_corner_left = [ "Corner Left", 2, 2, "l" ];
+    const element_stairs_down = [ "Stairs", 2, 2, "d" ];
+    const element_stairs_out = [ "Stairs", 2, 2, "u" ];
+    const element_room_large = [ "Room", 10, 5, "-" ];
+    const element_room_small = [ "Room", 5, 5, "-" ];
+
+    const dungeon_size = 50;
+    const dungeon_start_x = 25;
+    const dungeon_start_y = 1;
+    
+    const heading_north = 0;
+    const heading_east = 1;
+    const heading_south = 2;
+    const heading_west = 3;
+    const heading_end = 4;
+
     require_once "app/point.php";
     require_once "app/element.php";
     require_once "app/dungeon.php";
     require_once "app/dice.php";
 
-    // init dungeon
+    $points = array();
     $dice = new dice();
-    $dungeon = new dungeon( 2000, 2000, dungeon_type_nothing );
-    $points = [ new point( 999, 999, heading_south ) ]; // start point, every $dungeon->place_element call, returns the calculated point for the next element
+    $dungeon = new dungeon( dungeon_size, dungeon_size, dungeon_type_nothing );
 
-    // base dungeon elements
-    $points[ 0 ] = $dungeon->place_element( new element( element_stairs_start, $points[ 0 ]->get_direction() ), $points[ 0 ] );
-    $points[ 0 ] = $dungeon->place_element( new element( element_passage_two, $points[ 0 ]->get_direction() ), $points[ 0 ] );
+    $point = new point( dungeon_start_x, dungeon_start_y, heading_south );
+    $element = new element( element_stairs_down, heading_south );
+    $dungeon->place_element( $element, $point );
 
-    $points[ 1 ] = unserialize( serialize( $points[ 0 ] ) );
+    $point = new point( dungeon_start_x, dungeon_start_y+2, heading_south );
+    $element = new element( element_passage_two, heading_south );
+    $dungeon->place_element( $element, $point );
 
-    $points[ 0 ] = $dungeon->place_element( new element( element_t_junction_right, $points[ 0 ]->get_direction() ), $points[ 0 ] );
-    $points[ 1 ] = $dungeon->place_element( new element( element_t_junction_left, $points[ 1 ]->get_direction() ), $points[ 1 ] );
+    $point = new point( dungeon_start_x, dungeon_start_y+12, heading_south );
+    $element = new element( element_t_junction, heading_south );
+    $dungeon->place_element( $element, $point );
+    
+    $points[] = new point( dungeon_start_x-2, dungeon_start_y+12, heading_west );
+    $points[] = new point( dungeon_start_x+2, dungeon_start_y+12, heading_east );
 
-    /**
-    * !!! START generate dungeon !!!
-    */
-    $points_array_iterator = new ArrayIterator( $points );
-
-    foreach ( $points_array_iterator as $point_idx => $point )
+    $again = true;
+    while ( $again )
     {
-        do
+        $act_point = array_shift( $points );
+
+        // first step passage
+        
+        $roll = rand( 1, 12 );
+        
+        if ( $roll <= 3 )
         {
-            // first step passage
-            $tmp_placeable = unserialize( serialize( $point ) );
-            $tries = 0;
-
-            do
-            {
-                $tries++;
-
-                $roll = $tries > 3 ? 1 : array_sum( $dice->roll( "1D12" ) );
-
-                if ($roll <= 3) $passage = new element( element_passage_one, $point->get_direction() );
-                if ($roll >= 4 && $roll <= 8) $passage = new element( element_passage_two, $point->get_direction() );
-                if ($roll >= 9) $passage = new element( element_passage_three, $point->get_direction() );
-                
-                // second step passage function
-                $passage->roll_feature();
-
-                // place passage
-                $point = $dungeon->place_element( $passage, $point );
-
-                // if passage has room(s), place it
-                if ( $passage->get_feature() == "1 Door" || $passage->get_feature() == "2 Doors" )
-                {
-                    $direction = $passage->get_direction();
-                    
-                }
-            }
-            while ($point == $tmp_placeable);
-
-            // third step passage end
-            $tmp_placeable = unserialize( serialize( $point ) );
-            $tries = 0;
-
-            do
-            {
-                $tries++;
-
-                $roll = $tries > 3 ? 6 : array_sum( $dice->roll( "2D12" ) );
-
-                if ($roll <= 3) // T-Junction
-                {
-                    $passage_end = new element( element_t_junction_right, $point->get_direction() );
-
-                    $new_point = unserialize( serialize( $point ) );
-
-                    if ( $point->get_direction() == heading_north )
-                    {
-                        $new_point->set_direction( heading_south );
-                    }
-
-                    if ( $point->get_direction() == heading_east )
-                    {
-                        $new_point->set_direction( heading_west );
-                    }
-
-                    if ( $point->get_direction() == heading_south )
-                    {
-                        $new_point->set_direction( heading_north );
-                    }
-
-                    if ( $point->get_direction() == heading_west )
-                    {
-                        $new_point->set_direction( heading_east );
-                    }
-
-                    //$points_array_iterator[] = $new_point;
-                }
-
-                if ($roll >= 4 && $roll <= 8) // Dead End
-                {
-                    $passage_end = new element( element_dead_end, $point->get_direction() );
-                }
-
-                if ($roll >= 9 && $roll <= 11) // Corner Right
-                {
-                    $passage_end = new element( element_corner_right, $point->get_direction() );
-                }
-
-                if ($roll >= 12 && $roll <= 14) // T-Junction
-                {
-                    $passage_end = new element( element_t_junction_right, $point->get_direction() );
-
-                    $new_point = unserialize( serialize( $point ) );
-
-                    if ( $point->get_direction() == heading_north )
-                    {
-                        $new_point->set_direction( heading_south );
-                    }
-
-                    if ( $point->get_direction() == heading_east )
-                    {
-                        $new_point->set_direction( heading_west );
-                    }
-
-                    if ( $point->get_direction() == heading_south )
-                    {
-                        $new_point->set_direction( heading_north );
-                    }
-
-                    if ( $point->get_direction() == heading_west )
-                    {
-                        $new_point->set_direction( heading_east );
-                    }
-
-                    //$points_array_iterator[] = $new_point;
-                }
-
-                if ($roll >= 15 && $roll <= 17) // Corner Left
-                {
-                    $passage_end = new element( element_corner_left, $point->get_direction() );
-                }
-
-                if ($roll >= 18 && $roll <= 19) // Stairs Down
-                {
-                    $passage_end = new element( element_stairs_down, $point->get_direction() );
-                }
-
-                if ($roll >= 20 && $roll <= 22) // Stairs Out
-                {
-                    $passage_end = new element( element_stairs_out, $point->get_direction() );
-                }
-
-                $point = $dungeon->place_element( $passage_end, $point );
-            }
-            while ($point == $tmp_placeable);
+            $passage = new element( element_passage_one, $act_point->get_direction() );
         }
-        while ($point->get_direction() != heading_end);
+        elseif ( $roll >= 4 && $roll <= 8 )
+        {
+            $passage = new element( element_passage_two, $act_point->get_direction() );
+        }
+        elseif ( $roll >= 9 )
+        {
+            $passage = new element( element_passage_three, $act_point->get_direction() );
+        }
+
+        $placeable = $dungeon->place_element( $passage, $act_point );
+
+        if ( count( $points ) == 0 )
+        {
+            $again = false;
+        }
     }
+    
+    
 
-    /**
-    * !!! END generate dungeon !!!
-    */
-
-    // draw dungeon
     $dungeon->draw();
+
 ?>

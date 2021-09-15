@@ -1,48 +1,32 @@
 <?php
-// elements [ name, widht, height, symbol ]
-const element_passage_one = [ "Passage", 5, 2, "_" ];
-const element_passage_two = [ "Passage", 10, 2, "_" ];
-const element_passage_three = [ "Passage", 15, 2, "_" ];
-const element_t_junction_right = [ "T-Junction Right", 2, 2, "t" ];
-const element_t_junction_left = [ "T-Junction Left", 2, 2, "t" ];
-const element_dead_end = [ "Dead End", 5, 2, "e" ];
-const element_corner_right = [ "Corner Right", 2, 2, "r" ];
-const element_corner_left = [ "Corner Left", 2, 2, "l" ];
-const element_stairs_start = [ "Stairway", 2, 2, "s" ];
-const element_stairs_down = [ "Stairs", 2, 2, "d" ];
-const element_stairs_out = [ "Stairs", 2, 2, "u" ];
-const element_room_large = [ "Room", 10, 5, "-" ];
-const element_room_small = [ "Room", 5, 5, "-" ];
-const element_room_revolving = [ "Room", 5, 5, "-" ];
 
 class element
 {
-    // Properties
     public string $type;
     public int $width;
     public int $height;
     public int $direction;
-    public array $tiles;
+    public string $symbol;
     public string $feature;
 
-    function __construct( array $element, int $direction )
+    function __construct( array $element, int $direction2 )
     {
         $this->type = $element[ 0 ];
-        $this->width = $element[ $direction == heading_west || $direction == heading_east ? 1 : 2 ];
-        $this->height = $element[ $direction == heading_west || $direction == heading_east ? 2 : 1 ];
+        $this->direction = $direction2;
+        $this->symbol = $element[ 3 ];
 
-        for ( $y = 0; $y < $this->height; $y++ )
+        if ( $direction2 == heading_west or $direction2 == heading_east )
         {
-            for ( $x = 0; $x < $this->width; $x++ )
-            {
-                $this->tiles[ $y ][ $x ] = $element[ 3 ];
-            }
+            $this->height = $element[ 2 ];
+            $this->width = $element[ 1 ];
         }
-
-        $this->direction = $direction;
+        else
+        {
+            $this->height = $element[ 2 ];
+            $this->width = $element[ 1 ];
+        }
     }
 
-    // Methods
     function set_type( int $type )
     {
         $this->type = $type;
@@ -93,11 +77,6 @@ class element
         return $this->tiles[ $pos_y ][ $pos_x ];
     }
 
-    function get_tiles()
-    {
-        return $this->tiles;
-    }
-
     function set_feature( string $feature)
     {
         $this->feature = $feature;
@@ -106,6 +85,16 @@ class element
     function get_feature()
     {
         return $this->feature;
+    }
+
+    function set_symbol( string $symbol)
+    {
+        $this->symbol = $symbol;
+    }
+
+    function get_symbol()
+    {
+        return $this->symbol;
     }
 
     function roll_feature()

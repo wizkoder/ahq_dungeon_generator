@@ -1,14 +1,7 @@
 <?php
-// point direction
-const heading_north = 0;
-const heading_east = 1;
-const heading_south = 2;
-const heading_west = 3;
-const heading_end = 4;
 
 class point
 {
-    // Properties
     public int $pos_x;
     public int $pos_y;
     public int $direction;
@@ -20,7 +13,6 @@ class point
         $this->set_direction( $direction );
     }
 
-    // Methods
     function set_pos_x( int $pos_x )
     {
         $this->pos_x = $pos_x;

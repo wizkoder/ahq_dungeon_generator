@@ -4,7 +4,6 @@ const dungeon_type_nothing = ".";
 
 class dungeon
 {
-    // Properties
     public int $width;
     public int $height;
     public array $grid;
@@ -18,12 +17,11 @@ class dungeon
         {
             for ( $x = 0; $x < $this->width; $x++ )
             {
-                $this->grid[ $y ][ $x ] = dungeon_type_nothing;
+                $this->grid[ $x ][ $y ] = dungeon_type_nothing;
             }
         }
     }
 
-    // Methods
     function set_width( int $width )
     {
         $this->width = $width;
@@ -44,223 +42,153 @@ class dungeon
         return $this->height;
     }
 
+    function element_placeable( $point, $element, $offset_x, $offset_y )
+    {
+        $placeable = true;
+        $xtest = $point->get_pos_x();
+        $ytest = $point->get_pos_y();
+
+        for ( $y = 0; $y < $element->get_height(); $y++ )
+        {
+            for ( $x = 0; $x < $element->get_width(); $x++ )
+            {
+                if ( $this->grid[ $xtest ][ $ytest ] != dungeon_type_nothing )
+                {
+                    $placeable = false;
+                }
+                
+                $xtest = $xtest + $offset_x;
+                $ytest = $ytest + $offset_y;
+            }
+    
+            if ( $offset_x == 0 )
+            {
+                $xtest++;
+                $ytest = $point->get_pos_y();
+            }
+    
+            if ( $offset_y == 0 )
+            {
+                $ytest++;
+                $xtest = $point->get_pos_x();
+            }
+
+            if ( $xtest < 0 or $xtest > $this->width )
+            {
+                return false;
+            }
+
+            if ( $ytest < 0 or $ytest > $this->height )
+            {
+                return false;
+            }
+    
+        }
+
+        return $placeable;
+    }
+
+    function place_element_2( $element, $point, $offset_x, $offset_y )
+    {
+        $xtest = $point->get_pos_x();
+        $ytest = $point->get_pos_y();
+
+        for ( $y = 0; $y < $element->get_height(); $y++ )
+        {
+            for ( $x = 0; $x < $element->get_width(); $x++ )
+            {
+                $this->grid[ $xtest ][ $ytest ] = $element->get_symbol();
+
+                //echo "x:".$xtest."/y:".$ytest."/symbol:".$element->get_symbol()."<br/>";
+                
+                $xtest = $xtest + $offset_x;
+                $ytest = $ytest + $offset_y;
+            }
+    
+            if ( $offset_x == 0 )
+            {
+                $xtest++;
+                $ytest = $point->get_pos_y();
+            }
+    
+            if ( $offset_y == 0 )
+            {
+                $ytest++;
+                $xtest = $point->get_pos_x();
+            }
+        }
+    }
+
     function place_element( element $element, point $point )
     {
         if ( $point->get_direction() == heading_north )
         {
-            $placeable = true;
-
-            if ( $element->get_type() != "T-Junction Right" && $element->get_type() != "T-Junction Left" )
-            {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        if ( $this->grid[ $point->get_pos_y() - $y ][ $point->get_pos_x() - $x ] != dungeon_type_nothing )
-                        {
-                            $placeable = false;
-                        }
-                    }
-                }
-            }
+            $placeable = $this->element_placeable( $point, $element, 0, -1 );
 
             if ( $placeable )
             {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        $this->grid[ $point->get_pos_y() - $y ][ $point->get_pos_x() - $x ] = $element->get_tile( $x, $y );
-                    }
-                }
-
-                $point->set_pos_y( $point->get_pos_y() - $element->get_height() );
-
-                if ( $element->get_type() == "T-Junction Right" || $element->get_type() == "Corner Right" )
-                {
-                    $point = new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y() + $element->get_height() / 2, heading_east );
-                }
-
-                if ( $element->get_type() == "T-Junction Left" || $element->get_type() == "Corner Left" )
-                {
-                    $point = new point( $point->get_pos_x() - $element->get_width(), $point->get_pos_y() + $element->get_height(), heading_west );
-                }
-
-                if ( $element->get_type() == "Dead End" || $element->get_type() == "Stairs" )
-                {
-                    $point->set_direction( heading_end );
-                }
+                $this->place_element_2( $element, $point , 0, -1 );
             }
 
-            return $point;
-        }
-
-        if ( $point->get_direction() == heading_east )
-        {
-            $placeable = true;
-
-            if ( $element->get_type() != "T-Junction Right" && $element->get_type() != "T-Junction Left" )
-            {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        if ( $this->grid[ $point->get_pos_y() + $y ][ $point->get_pos_x() + $x ] != dungeon_type_nothing )
-                        {
-                            $placeable = false;
-                        }
-                    }
-                }
-            }
-
-            if ( $placeable )
-            {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        $this->grid[ $point->get_pos_y() + $y ][ $point->get_pos_x() + $x ] = $element->get_tile( $x, $y );
-                    }
-                }
-
-                $point->set_pos_x( $point->get_pos_x() + $element->get_width() );
-
-                if ( $element->get_type() == "T-Junction Right" || $element->get_type() == "Corner Right" )
-                {
-                    $point = new point( $point->get_pos_x() - $element->get_width(), $point->get_pos_y() + $element->get_height(), heading_south );
-                }
-
-                if ( $element->get_type() == "T-Junction Left" || $element->get_type() == "Corner Left" )
-                {
-                    $point = new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y() - $element->get_height() / 2, heading_north );
-                }
-
-                if ( $element->get_type() == "Dead End" || $element->get_type() == "Stairs" )
-                {
-                    $point->set_direction( heading_end );
-                }
-            }
-
-            return $point;
+            return $placeable;
         }
 
         if ( $point->get_direction() == heading_south )
         {
-            $placeable = true;
-
-            if ( $element->get_type() != "T-Junction Right" && $element->get_type() != "T-Junction Left" )
-            {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        if ( $this->grid[ $point->get_pos_y() + $y ][ $point->get_pos_x() + $x ] != dungeon_type_nothing )
-                        {
-                            $placeable = false;
-                        }
-                    }
-                }
-            }
+            $placeable = $this->element_placeable( $point, $element, 0, 1 );
 
             if ( $placeable )
             {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        $this->grid[ $point->get_pos_y() + $y ][ $point->get_pos_x() + $x ] = $element->get_tile( $x, $y );
-                    }
-                }
-
-                $point->set_pos_y( $point->get_pos_y() + $element->get_height() );
-
-                if ( $element->get_type() == "T-Junction Right" || $element->get_type() == "Corner Right" )
-                {
-                    $point = new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y() - $element->get_height() / 2, heading_west );
-                }
-
-                if ( $element->get_type() == "T-Junction Left" || $element->get_type() == "Corner Left" )
-                {
-                    $point = new point( $point->get_pos_x() + $element->get_width(), $point->get_pos_y() - $element->get_height(), heading_east );
-                }
-
-                if ( $element->get_type() == "Dead End" || $element->get_type() == "Stairs" )
-                {
-                    $point->set_direction( heading_end );
-                }
+                $this->place_element_2( $element, $point, 0, 1 );
             }
 
-            return $point;
+            return $placeable;
+        }
+
+        if ( $point->get_direction() == heading_east )
+        {
+            $placeable = $this->element_placeable( $point, $element, 1, 0 );
+
+            if ( $placeable )
+            {
+                $this->place_element_2( $element, $point, 1, 0 );
+            }
+
+            return $placeable;
         }
 
         if ( $point->get_direction() == heading_west )
         {
-            $placeable = true;
-
-            if ( $element->get_type() != "T-Junction Right" && $element->get_type() != "T-Junction Left" )
-            {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        if ( $this->grid[ $point->get_pos_y() - $y ][ $point->get_pos_x() - $x ] != dungeon_type_nothing )
-                        {
-                            $placeable = false;
-                        }
-                    }
-                }
-            }
+            $placeable = $this->element_placeable( $point, $element, -1, 0 );
 
             if ( $placeable )
             {
-                for ( $y = 0; $y < $element->get_height(); $y++ )
-                {
-                    for ( $x = 0; $x < $element->get_width(); $x++ )
-                    {
-                        $this->grid[ $point->get_pos_y() - $y ][ $point->get_pos_x() - $x ] = $element->get_tile( $x, $y );
-                    }
-                }
-
-                $point->set_pos_x( $point->get_pos_x() - $element->get_width() );
-
-                if ( $element->get_type() == "T-Junction Right" || $element->get_type() == "Corner Right" )
-                {
-                    $point = new point( $point->get_pos_x() + $element->get_width(), $point->get_pos_y() - $element->get_height(), heading_north );
-                }
-
-                if ( $element->get_type() == "T-Junction Left" || $element->get_type() == "Corner Left" )
-                {
-                    $point = new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y() + $element->get_height() / 2, heading_south );
-                }
-
-                if ( $element->get_type() == "Dead End" || $element->get_type() == "Stairs" )
-                {
-                    $point->set_direction( heading_end );
-                }
+                $this->place_element_2( $element, $point, -1, 0 );
             }
 
-            return $point;
+            return $placeable;
         }
     }
 
     function draw()
     {
         $matrix = $this->grid;
+        /*
         $matrix = $this->array_remove_unique_lines( $matrix );
         $matrix = $this->array_transpose( $matrix );
         $matrix = $this->array_remove_unique_lines( $matrix );
         $matrix = $this->array_transpose( $matrix );
+        */
 
         echo "<p  style='font-family: monospace, monospace'>";
 
-        foreach ( $matrix as $row )
+        for ( $y=0; $y<dungeon_size; $y++ )
         {
-            foreach ( $row as $cell )
+            for ( $x=0; $x<dungeon_size; $x++ )
             {
-                echo $cell;
+                echo $matrix[$x][$y];
             }
-
-            echo "<br />";
+            echo "<br/>";
         }
 
         echo "</p>";
@@ -270,7 +198,7 @@ class dungeon
     {
         foreach ( $array as $row_nr => $row )
         {
-            if ( count( array_unique( $row ) ) === 1 && array_count_values( $array[ $row_nr ]  )[ dungeon_type_nothing ] == count( $array[ $row_nr ] ) )
+            if ( count( array_unique( $row ) ) === 1 && array_count_values( $array[ $row_nr ] )[ dungeon_type_nothing ] == count( $array[ $row_nr ] ) )
             {
                 unset( $array[ $row_nr ] );
             }
