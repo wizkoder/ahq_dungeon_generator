@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <?php
+<?php
     require_once "app/console.php";
     require_once "app/point.php";
     require_once "app/element.php";
@@ -150,7 +150,7 @@
 
     // draw dungeon
     $dungeon->draw( dungeon_tile_size, dungeon_with_grid, dungeon_as_ascii );
-    ?>
+?>
 </body>
 
 </html>

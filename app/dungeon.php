@@ -239,8 +239,8 @@ class dungeon
             echo 'top: 50%;';
             echo 'left: 50%;';
             echo 'transform: translate(-50%, -50%);';
-            echo 'color: white;';
-            echo 'text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;';
+            echo 'color: black;';
+            echo 'text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;';
             echo '}';
             echo '</style>';
     
@@ -251,13 +251,13 @@ class dungeon
                 foreach ( $row as $cell )
                 {
                     echo '<div class="tile">';
-    
+                    /*
                     switch ( $cell )
                     {
                         case dungeon_type_nothing:
                             echo '<img alt="tile" class="img" src="img/tile_00.png">';
                             break;
-    
+
                         case 'e':
                         case 's':
                         case 'd':
@@ -266,12 +266,28 @@ class dungeon
                             echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
                             echo '<span class="text">'.$cell.'</span>';
                             break;
-    
+
                         default:
                             echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
                             break;
                     }
-    
+                    */
+                    switch ( $cell )
+                    {
+                        case dungeon_type_nothing:
+                            echo '<img alt="tile" class="img" src="img/tile_00.png">';
+                            break;
+
+                        case '_':
+                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
+                            break;
+
+                        default:
+                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
+                            echo '<span class="text">'.$cell.'</span>';
+                            break;
+                    }
+
                     echo '</div>';
                 }
             }
@@ -289,7 +305,6 @@ class dungeon
             if ( array_key_exists( dungeon_type_nothing, $array_count_values ) && $array_count_values[ dungeon_type_nothing ] == count( $array[ $row_nr ] ) )
             {
                 unset( $array[ $row_nr ] );
-
             }
         }
 
