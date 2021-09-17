@@ -1,2 +1,2 @@
-# ahq_dungeon_generator
-A dungeon generator for advanced heroquest
+# Advanced Heroquest Dungeon Generator
+A dungeon generator for Advanced Heroquest
