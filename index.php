@@ -28,6 +28,8 @@
         if ( $dungeon->is_element_placable( $element, $point, true ) )
         {
             $points = $points + $dungeon->place_element( $element, $point );
+
+            $console->log( $element->get_type() );
         }
     }
 
@@ -77,8 +79,6 @@
 
                         $room_direction = array_sum( $dice->roll( "1D12" ) ) % 2 ? heading_north_east : heading_east_south ;
 
-                        // $console->log( $room_direction );
-
                         if ( $roll <= 6 ) $room = new element( element_room_small, $room_direction ); // Normal Small
                         if ( $roll >= 7 && $roll <= 8 ) $room = new element( element_room_small, $room_direction ); // Hazard Small
                         if ( $roll >= 9 && $roll <= 10 ) $room = new element( element_room_large, $room_direction ); // Lair Large
@@ -89,7 +89,9 @@
                         if ( $room_placeable )
                         {
                             $dungeon->place_element( $room, $point_door );
-                        }
+
+                            $console->log( $room->get_type() );
+                    }
                     } 
                     while ( !$room_placeable && $room_placeable_tries <= 5 );
                 }
@@ -101,6 +103,7 @@
                     $passage_end_placeable_tries++;
 
                     $roll = $passage_end_placeable_tries >= 5 ? 6 : array_sum( $dice->roll( "2D12" ) );
+                    //$roll = 6;
 
                     if ($roll <= 3) $passage_end = new element( element_t_junction, $point->get_direction() ); // T-Junction
                     if ($roll >= 4 && $roll <= 8) $passage_end = new element( element_dead_end, $point->get_direction() ); // Dead End

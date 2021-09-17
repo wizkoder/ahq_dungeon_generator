@@ -1,18 +1,18 @@
 <?php
 // elements [ name, widht, height, symbol ]
-const element_passage_one = [ "Passage", 5, 2, "_" ];
-const element_passage_two = [ "Passage", 10, 2, "_" ];
-const element_passage_three = [ "Passage", 15, 2, "_" ];
+const element_passage_one = [ "Passage 1 section", 5, 2, "_" ];
+const element_passage_two = [ "Passage 2 sections", 10, 2, "_" ];
+const element_passage_three = [ "Passage 3 sections", 15, 2, "_" ];
 const element_t_junction = [ "T-Junction", 2, 2, "t" ];
 const element_dead_end = [ "Dead End", 5, 2, "e" ];
 const element_corner_right = [ "Corner Right", 2, 2, "r" ];
 const element_corner_left = [ "Corner Left", 2, 2, "l" ];
-const element_stairs_start = [ "Stairway", 2, 2, "s" ];
+const element_stairs_start = [ "Stairs Start", 2, 2, "s" ];
 const element_stairs_down = [ "Stairs Down", 2, 2, "d" ];
 const element_stairs_out = [ "Stairs Out", 2, 2, "u" ];
-const element_room_large = [ "Room", 10, 5, "R" ];
-const element_room_small = [ "Room", 5, 5, "R" ];
-const element_room_revolving = [ "Room", 5, 5, "-" ];
+const element_room_large = [ "Room Large", 10, 5, "x" ];
+const element_room_small = [ "Room Small", 5, 5, "x" ];
+const element_room_revolving = [ "Room Revolving", 5, 5, "x" ];
 
 class element
 {
@@ -152,30 +152,30 @@ class element
         {
             $this->feature = "1 Door";
 
-            $pos_x = random_int( 1, $this->width ) - 1;
-            $pos_y = random_int( 1, $this->height ) - 1;
+            $pos_x = random_int( 1, 5 ) - 1;
+            $pos_y = random_int( 1, 5 ) - 1;
     
             $this->tiles[ $pos_y ][ $pos_x ] = "D";
 
-            if ( $this->direction == heading_north_east )
+            if ( $point->get_direction() == heading_north_east )
             {
                 if ( $pos_x == 0 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width() / 2, $point->get_pos_y(), heading_west_north ) );
                 if ( $pos_x == 1 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width(), $point->get_pos_y(), heading_north_east ) );
             }
 
-            if ( $this->direction == heading_east_south )
+            if ( $point->get_direction() == heading_east_south )
             {
                 if ( $pos_y == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height() / 2, heading_north_east ) );
-                if ( $pos_y == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height(), heading_south_west ) );
+                if ( $pos_y == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height(), heading_east_south ) );
             }
 
-            if ( $this->direction == heading_south_west )
+            if ( $point->get_direction() == heading_south_west )
             {
                 if ( $pos_x == 0 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width() / 2, $point->get_pos_y(), heading_east_south ) );
                 if ( $pos_x == 1 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width(), $point->get_pos_y(), heading_south_west ) );
             }
 
-            if ( $this->direction == heading_west_north )
+            if ( $point->get_direction() == heading_west_north )
             {
                 if ( $pos_y == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height() / 2, heading_south_west ) );
                 if ( $pos_y == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height(), heading_west_north ) );
@@ -188,39 +188,39 @@ class element
 
             for ( $i = 0; $i < 2; $i++ )
             { 
-                $pos_x = random_int( 1, $this->width ) - 1;
-                $pos_y = random_int( 1, $this->height ) - 1;
-
-                if ( $this->direction == heading_north_east )
+                $pos_x = random_int( 1, 5 ) - 1;
+                $pos_y = random_int( 1, 5 ) - 1;
+    
+                if ( $point->get_direction() == heading_north_east )
                 {
                     $this->tiles[ $pos_y ][ $i ] = "D";
 
-                    if ( $pos_x == 0 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width() / 2, $point->get_pos_y(), heading_west_north ) );
-                    if ( $pos_x == 1 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width(), $point->get_pos_y(), heading_north_east ) );
+                    if ( $i == 0 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width() / 2, $point->get_pos_y(), heading_west_north ) );
+                    if ( $i == 1 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width(), $point->get_pos_y(), heading_north_east ) );
                 }
     
-                if ( $this->direction == heading_east_south )
+                if ( $point->get_direction() == heading_east_south )
                 {
                     $this->tiles[ $i ][ $pos_x ] = "D";
 
-                    if ( $pos_y == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height() / 2, heading_north_east ) );
-                    if ( $pos_y == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height(), heading_south_west ) );
+                    if ( $i == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height() / 2, heading_north_east ) );
+                    if ( $i == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height(), heading_east_south ) );
                 }
     
-                if ( $this->direction == heading_south_west )
+                if ( $point->get_direction() == heading_south_west )
                 {
                     $this->tiles[ $pos_y ][ $i ] = "D";
 
-                    if ( $pos_x == 0 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width() / 2, $point->get_pos_y(), heading_east_south ) );
-                    if ( $pos_x == 1 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width(), $point->get_pos_y(), heading_south_west ) );
+                    if ( $i == 0 ) array_push( $points, new point( $point->get_pos_x() + $this->get_width() / 2, $point->get_pos_y(), heading_east_south ) );
+                    if ( $i == 1 ) array_push( $points, new point( $point->get_pos_x() - $this->get_width(), $point->get_pos_y(), heading_south_west ) );
                 }
     
-                if ( $this->direction == heading_west_north )
+                if ( $point->get_direction() == heading_west_north )
                 {
                     $this->tiles[ $i ][ $pos_x ] = "D";
 
-                    if ( $pos_y == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height() / 2, heading_south_west ) );
-                    if ( $pos_y == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height(), heading_west_north ) );
+                    if ( $i == 0 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $this->get_height() / 2, heading_south_west ) );
+                    if ( $i == 1 ) array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $this->get_height(), heading_west_north ) );
                 }
             }
         }
