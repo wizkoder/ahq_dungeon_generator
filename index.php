@@ -75,10 +75,14 @@
 
                         $roll = array_sum( $dice->roll( "1D12" ) );
 
-                        if ( $roll <= 6 ) $room = new element( element_room_small, $point->get_direction() ); // Normal Small
-                        if ( $roll >= 7 && $roll <= 8 ) $room = new element( element_room_small, $point->get_direction() ); // Hazard Small
-                        if ( $roll >= 9 && $roll <= 10 ) $room = new element( element_room_large, $point->get_direction() ); // Lair Large
-                        if ( $roll >= 11 ) $room = new element( element_room_large, $point->get_direction() ); // Quest Large
+                        $room_direction = array_sum( $dice->roll( "1D12" ) ) % 2 ? heading_north_east : heading_east_south ;
+
+                        // $console->log( $room_direction );
+
+                        if ( $roll <= 6 ) $room = new element( element_room_small, $room_direction ); // Normal Small
+                        if ( $roll >= 7 && $roll <= 8 ) $room = new element( element_room_small, $room_direction ); // Hazard Small
+                        if ( $roll >= 9 && $roll <= 10 ) $room = new element( element_room_large, $room_direction ); // Lair Large
+                        if ( $roll >= 11 ) $room = new element( element_room_large, $room_direction ); // Quest Large
     
                         $room_placeable = $dungeon->is_element_placable( $room, $point_door, false );
 
