@@ -185,7 +185,7 @@ class dungeon
         return $points;
     }
 
-    function draw( bool $with_grid = false)
+    function draw( int $tile_size = 30, bool $with_grid = false, bool $ascii = false )
     {
         $matrix = $this->grid;
     
@@ -197,19 +197,61 @@ class dungeon
             $matrix = $this->array_transpose( $matrix );
         }
 
-        echo "<p  style='font-family: monospace, monospace'>";
-
-        foreach ( $matrix as $row )
+        if ( $ascii )
         {
-            foreach ( $row as $cell )
+            echo '<p style="font-family: monospace, monospace; font-size: '.$tile_size.'px;">';
+
+            foreach ( $matrix as $row )
             {
-                echo $cell;
+                foreach ( $row as $cell )
+                {
+                    echo $cell;
+                }
+
+                echo '<br />';
             }
 
-            echo "<br />";
+            echo '</p>';
         }
+        else
+        {
+            echo '<div style="font-family: monospace, monospace; font-size: '.( $tile_size / 1.5 ).'px; width: '.( $tile_size * count( reset( $matrix ) ) ).'px; height: '.( $tile_size * count( $matrix ) ).'px; margin: 0; padding: 0;">';
 
-        echo "</p>";
+            foreach ( $matrix as $row )
+            {
+                foreach ( $row as $cell )
+                {
+                    echo '<div style="position: relative; display: inline-block; text-align: center; color: white; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; margin: 0; padding: 0;">';
+                    echo '<img alt="tile" style="margin: 0; padding: 0; width: '.$tile_size.'px; height: '.$tile_size.'px;" src="img/';
+    
+                    switch ( $cell )
+                    {
+                        case dungeon_type_nothing:
+                            echo 'tile_00.png">';
+                            break;
+    
+                        case 'e':
+                        case 's':
+                        case 'd':
+                        case 'o':
+                        case 'D':
+                            echo 'tile_0'.random_int( 1, 8 ).'.png">';
+                            echo '<span style="margin: 0; padding: 0; position: absolute; top:50%; left:50%; transform: translate(-50%, -50%);">'.$cell.'</span>';
+                            break;
+    
+                        default:
+                            echo 'tile_0'.random_int( 1, 8 ).'.png">';
+                            break;
+                    }
+    
+                    echo '</div>';
+                }
+    
+                echo '<br />';
+            }
+
+            echo '</div>';
+        }
     }
 
     function array_remove_unique_lines( array $array )

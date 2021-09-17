@@ -8,7 +8,9 @@
     const dungeon_size = 2000;
     const dungeon_start_x = dungeon_size / 2;
     const dungeon_start_y = dungeon_size / 2;
+    const dungeon_tile_size = 24;
     const dungeon_with_grid = false;
+    const dungeon_as_ascii = false;
 
     // init dungeon
     $console = new console();
@@ -137,5 +139,5 @@
     */
 
     // draw dungeon
-    $dungeon->draw( dungeon_with_grid );
+    $dungeon->draw( dungeon_tile_size, dungeon_with_grid, dungeon_as_ascii );
 ?>
