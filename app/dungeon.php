@@ -188,7 +188,7 @@ class dungeon
     function draw( int $tile_size = 30, bool $with_grid = false, bool $ascii = false )
     {
         $matrix = $this->grid;
-    
+
         if ( !$with_grid )
         {
             $matrix = $this->array_remove_unique_lines( $matrix );
@@ -215,19 +215,47 @@ class dungeon
         }
         else
         {
-            echo '<div style="font-family: monospace, monospace; font-size: '.( $tile_size / 1.5 ).'px; width: '.( $tile_size * count( reset( $matrix ) ) ).'px; height: '.( $tile_size * count( $matrix ) ).'px; margin: 0; padding: 0;">';
+            echo '<style>';
+            echo '.dungeon {';
+            echo 'display: grid;';
+            echo 'grid-template-rows: repeat('.count( $matrix ).', '.$tile_size.'px);';
+            echo 'grid-template-columns: repeat('.count( $matrix[0] ).', '.$tile_size.'px);';
+            echo '}';
+
+            echo '.tile {';
+            echo 'position: relative;';
+            echo 'text-align: center;';
+            echo '}';
+
+            echo '.img {';
+            echo 'width: '.$tile_size.'px;';
+            echo 'height: '.$tile_size.'px;';
+            echo '}';
+
+            echo '.text {';
+            echo 'font-family: monospace, monospace;';
+            echo 'font-size: '.( $tile_size / 1.5 ).'px;';
+            echo 'position: absolute;';
+            echo 'top: 50%;';
+            echo 'left: 50%;';
+            echo 'transform: translate(-50%, -50%);';
+            echo 'color: white;';
+            echo 'text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;';
+            echo '}';
+            echo '</style>';
+    
+            echo '<div class="dungeon">';
 
             foreach ( $matrix as $row )
             {
                 foreach ( $row as $cell )
                 {
-                    echo '<div style="position: relative; display: inline-block; text-align: center; color: white; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; margin: 0; padding: 0;">';
-                    echo '<img alt="tile" style="margin: 0; padding: 0; width: '.$tile_size.'px; height: '.$tile_size.'px;" src="img/';
+                    echo '<div class="tile">';
     
                     switch ( $cell )
                     {
                         case dungeon_type_nothing:
-                            echo 'tile_00.png">';
+                            echo '<img alt="tile" class="img" src="img/tile_00.png">';
                             break;
     
                         case 'e':
@@ -235,19 +263,17 @@ class dungeon
                         case 'd':
                         case 'o':
                         case 'D':
-                            echo 'tile_0'.random_int( 1, 8 ).'.png">';
-                            echo '<span style="margin: 0; padding: 0; position: absolute; top:50%; left:50%; transform: translate(-50%, -50%);">'.$cell.'</span>';
+                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
+                            echo '<span class="text">'.$cell.'</span>';
                             break;
     
                         default:
-                            echo 'tile_0'.random_int( 1, 8 ).'.png">';
+                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
                             break;
                     }
     
                     echo '</div>';
                 }
-    
-                echo '<br />';
             }
 
             echo '</div>';
@@ -263,10 +289,11 @@ class dungeon
             if ( array_key_exists( dungeon_type_nothing, $array_count_values ) && $array_count_values[ dungeon_type_nothing ] == count( $array[ $row_nr ] ) )
             {
                 unset( $array[ $row_nr ] );
+
             }
         }
 
-        return $array;
+        return array_values( $array );
     }
 
     function array_transpose( array $array )

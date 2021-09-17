@@ -1,14 +1,24 @@
-<?php
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Heroquest Dungeon Generator</title>
+</head>
+
+<body>
+    <?php
     require_once "app/console.php";
     require_once "app/point.php";
     require_once "app/element.php";
     require_once "app/dungeon.php";
     require_once "app/dice.php";
 
-    const dungeon_size = 2000;
+    const dungeon_size = 50;
     const dungeon_start_x = dungeon_size / 2;
     const dungeon_start_y = dungeon_size / 2;
-    const dungeon_tile_size = 24;
+    const dungeon_tile_size = 30;
     const dungeon_with_grid = false;
     const dungeon_as_ascii = false;
 
@@ -140,4 +150,7 @@
 
     // draw dungeon
     $dungeon->draw( dungeon_tile_size, dungeon_with_grid, dungeon_as_ascii );
-?>
+    ?>
+</body>
+
+</html>
