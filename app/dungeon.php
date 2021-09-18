@@ -185,115 +185,19 @@ class dungeon
         return $points;
     }
 
-    function draw( int $tile_size = 30, bool $with_grid = false, bool $ascii = false )
+    function get_tiles( bool $with_grid = false )
     {
-        $matrix = $this->grid;
+        $tiles = $this->grid;
 
         if ( !$with_grid )
         {
-            $matrix = $this->array_remove_unique_lines( $matrix );
-            $matrix = $this->array_transpose( $matrix );
-            $matrix = $this->array_remove_unique_lines( $matrix );
-            $matrix = $this->array_transpose( $matrix );
+            $tiles = $this->array_remove_unique_lines( $tiles );
+            $tiles = $this->array_transpose( $tiles );
+            $tiles = $this->array_remove_unique_lines( $tiles );
+            $tiles = $this->array_transpose( $tiles );
         }
 
-        if ( $ascii )
-        {
-            echo '<p style="font-family: monospace, monospace; font-size: '.$tile_size.'px;">';
-
-            foreach ( $matrix as $row )
-            {
-                foreach ( $row as $cell )
-                {
-                    echo $cell;
-                }
-
-                echo '<br />';
-            }
-
-            echo '</p>';
-        }
-        else
-        {
-            echo '<style>';
-            echo '.dungeon {';
-            echo 'display: grid;';
-            echo 'grid-template-rows: repeat('.count( $matrix ).', '.$tile_size.'px);';
-            echo 'grid-template-columns: repeat('.count( $matrix[0] ).', '.$tile_size.'px);';
-            echo '}';
-
-            echo '.tile {';
-            echo 'position: relative;';
-            echo 'text-align: center;';
-            echo '}';
-
-            echo '.img {';
-            echo 'width: '.$tile_size.'px;';
-            echo 'height: '.$tile_size.'px;';
-            echo '}';
-
-            echo '.text {';
-            echo 'font-family: monospace, monospace;';
-            echo 'font-size: '.( $tile_size / 1.5 ).'px;';
-            echo 'position: absolute;';
-            echo 'top: 50%;';
-            echo 'left: 50%;';
-            echo 'transform: translate(-50%, -50%);';
-            echo 'color: black;';
-            echo 'text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;';
-            echo '}';
-            echo '</style>';
-    
-            echo '<div class="dungeon">';
-
-            foreach ( $matrix as $row )
-            {
-                foreach ( $row as $cell )
-                {
-                    echo '<div class="tile">';
-                    /*
-                    switch ( $cell )
-                    {
-                        case dungeon_type_nothing:
-                            echo '<img alt="tile" class="img" src="img/tile_00.png">';
-                            break;
-
-                        case 'e':
-                        case 's':
-                        case 'd':
-                        case 'o':
-                        case 'D':
-                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
-                            echo '<span class="text">'.$cell.'</span>';
-                            break;
-
-                        default:
-                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
-                            break;
-                    }
-                    */
-                    switch ( $cell )
-                    {
-                        case dungeon_type_nothing:
-                            echo '<img alt="tile" class="img" src="img/tile_00.png">';
-                            break;
-
-                        case '_':
-                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
-                            break;
-
-                        default:
-                            echo '<img alt="tile" class="img" src="img/tile_0'.random_int( 1, 8 ).'.png">';
-                            echo '<span class="text">'.$cell.'</span>';
-                            break;
-                    }
-
-                    echo '</div>';
-                }
-            }
-
-            echo '</div>';
-        }
+        return $tiles;
     }
 
     function array_remove_unique_lines( array $array )
