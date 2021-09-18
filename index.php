@@ -139,109 +139,119 @@ $tiles = $dungeon->get_tiles();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Heroquest Dungeon Generator</title>
     <?php if ( dungeon_as_ascii ) { ?>
-        <style>
-            .dungeon {
-                font-family: monospace, monospace;
-                font-size: <?php echo dungeon_tile_size ?>px;
-            }
-        </style>
+    <style>
+        :root {
+            --tile-size: <?= dungeon_tile_size ?>px;
+        }
+
+        .dungeon {
+            font-family: monospace, monospace;
+            font-size: var( --tile-size ) / 1.5;
+        }
+    </style>
     <?php } else { ?>
-        <style>
-            .dungeon {
-                display: grid;
-                grid-template-rows: repeat(<?php echo count( $tiles ) ?>, <?php echo dungeon_tile_size ?>px);
-                grid-template-columns: repeat(<?php echo count( $tiles[ 0 ] ) ?>, <?php echo dungeon_tile_size ?>px);
-            }
+    <style>
+        :root {
+            --tile-size: <?= dungeon_tile_size ?>px;
+            --grid-rows: <?= count( $tiles ) ?>;
+            --grid-columns: <?= count( $tiles[ 0 ] ) ?>;
+        }
 
-            .tile {
-                position: relative;
-                text-align: center;
-            }
+        .dungeon {
+            display: grid;
+            grid-template-rows: repeat( var( --grid-rows ), var( --tile-size ) );
+            grid-template-columns: repeat( var( --grid-columns ), var( --tile-size ) );
+        }
 
-            .img {
-                width: <?php echo dungeon_tile_size ?>px;
-                height: <?php echo dungeon_tile_size ?>px;
-            }
+        .tile {
+            position: relative;
+            text-align: center;
+        }
 
-            .text {
-                font-family: monospace, monospace;
-                font-size: <?php echo ( dungeon_tile_size / 1.5 ) ?>px;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: black;
-                text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-            }
-        </style>
+        .img {
+            width: var( --tile-size );
+            height: var( --tile-size );
+        }
+
+        .text {
+            font-family: monospace, monospace;
+            font-size: var( --tile-size ) / 1.5;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: black;
+            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+        }
+    </style>
     <?php } ?>
 </head>
 
 <body>
-    <?php
-    // draw dungeon
-    if ( dungeon_as_ascii )
-    {
-        echo '<p class="dungeon">';
+<?php
+// draw dungeon
+if ( dungeon_as_ascii )
+{
+    echo '<p class="dungeon">';
 
-        foreach ( $tiles as $row )
+    foreach ( $tiles as $row )
+    {
+        foreach ( $row as $cell )
         {
-            foreach ( $row as $cell )
+            echo $cell;
+        }
+
+        echo '<br />';
+    }
+
+    echo '</p>';
+}
+else
+{
+    echo '<div class="dungeon">';
+
+    foreach ( $tiles as $row )
+    {
+        foreach ( $row as $cell )
+        {
+            echo '<div class="tile">';
+
+            switch ( $cell )
             {
-                echo $cell;
+                case dungeon_type_nothing:
+                    echo '<img alt="tile" class="img" src="img/tile_00.png">';
+                    break;
+
+                case '_':
+                    echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
+                    break;
+
+                default:
+                    echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
+                    echo '<span class="text">' . $cell . '</span>';
+                    break;
             }
 
-            echo '<br />';
+            echo '</div>';
         }
-
-        echo '</p>';
     }
-    else
+
+    echo '</div>';
+}
+
+// console output
+if ( $log = $console->get_log() )
+{
+    echo '<script>';
+
+    foreach ( $log as $entry )
     {
-        echo '<div class="dungeon">';
-
-        foreach ( $tiles as $row )
-        {
-            foreach ( $row as $cell )
-            {
-                echo '<div class="tile">';
-
-                switch ( $cell )
-                {
-                    case dungeon_type_nothing:
-                        echo '<img alt="tile" class="img" src="img/tile_00.png">';
-                        break;
-
-                    case '_':
-                        echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
-                        break;
-
-                    default:
-                        echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
-                        echo '<span class="text">' . $cell . '</span>';
-                        break;
-                }
-
-                echo '</div>';
-            }
-        }
-
-        echo '</div>';
+        echo $entry . "\n";
     }
 
-    // console output
-    if ( $log = $console->get_log() )
-    {
-        echo '<script>';
-
-        foreach ( $log as $entry )
-        {
-            echo $entry . "\n";
-        }
-
-        echo '</script>';
-    }
-    ?>
+    echo '</script>';
+}
+?>
 </body>
 
 </html>
