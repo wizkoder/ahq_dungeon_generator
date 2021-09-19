@@ -2,11 +2,26 @@
 class console
 {
     // Properties
-    public array $data;
+    private static $instance;
+    private array $data;
 
-    function __construct()
+    private function __construct()
     {
         $this->data = array();
+    }
+
+    private function __clone( )
+    {
+    }
+
+    public static function getInstance( )
+    {
+        if ( is_null( self::$instance ) )
+        {
+            self::$instance = new self( );
+        }
+
+        return self::$instance;
     }
 
     function log( $data )

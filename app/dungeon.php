@@ -56,9 +56,9 @@ class dungeon
         $width = $include_space ? $element->get_placeable_width() : $element->get_width();
         $height = $include_space ? $element->get_placeable_height() : $element->get_height() ;
 
-        for ( $y = 0; $y < $height; $y++ )
+        for ( $x = 0; $x < $width; $x++ )
         {
-            for ( $x = 0; $x < $width; $x++ )
+            for ( $y = 0; $y < $height; $y++ )
             {
                 $grid_x = $point->get_pos_x() + ( $x * $point->get_direction()[ 0 ] );
                 $grid_y = $point->get_pos_y() + ( $y * $point->get_direction()[ 1 ] );
@@ -77,109 +77,73 @@ class dungeon
     {
         $points = array();
 
-        for ( $y = 0; $y < $element->get_height(); $y++ )
+        for ( $x = 0; $x < $element->get_width(); $x++ )
         {
-            for ( $x = 0; $x < $element->get_width(); $x++ )
+            for ( $y = 0; $y < $element->get_height(); $y++ )
             {
                 $grid_x = $point->get_pos_x() + ( $x * $point->get_direction()[ 0 ] );
                 $grid_y = $point->get_pos_y() + ( $y * $point->get_direction()[ 1 ] );
 
-                $this->grid[ $grid_y ][ $grid_x ] = $element->get_tile( $x, $y );
+                $this->grid[ $grid_y ][ $grid_x ] = $element->get_segment( $x, $y, $point->get_direction() );
             }
         }
 
-        switch ( $element->get_type() )
+        if ( in_array( $element->get_type(), [ "Corner Right", "T-Junction" ] ) )
         {
-            case "T-Junction":
-                if ( $point->get_direction() == heading_north_east )
-                {
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width(), $point->get_pos_y() - $element->get_height() / 2, heading_east_south ) );
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y(), heading_west_north ) );
-                }
+            if ( $point->get_direction() == heading_north_east ) $direction = heading_east_south;
+            if ( $point->get_direction() == heading_east_south ) $direction = heading_south_west;
+            if ( $point->get_direction() == heading_south_west ) $direction = heading_west_north;
+            if ( $point->get_direction() == heading_west_north ) $direction = heading_north_east;
 
-                if ( $point->get_direction() == heading_east_south )
-                {
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y() + $element->get_height(), heading_south_west ) );
-                    array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $element->get_height() / 2, heading_north_east ) );
-                }
+            if ( $direction == heading_north_east || $direction == heading_south_west )
+            {
+                $pos_x = $point->get_pos_x() + $point->get_direction()[ 0 ];
+                $pos_y = $point->get_pos_y() + ( $element->get_height() * $direction[ 1 ] );
+            }
+            else
+            {
+                $pos_x = $point->get_pos_x() + ( $element->get_width() * $direction[ 0 ] );
+                $pos_y = $point->get_pos_y() + $point->get_direction()[ 1 ];
+            }
 
-                if ( $point->get_direction() == heading_south_west )
-                {
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width(), $point->get_pos_y() + $element->get_height() / 2, heading_west_north ) );
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y(), heading_east_south ) );
-                }
+            array_push( $points, new point( $pos_x, $pos_y, $direction ) );
+        }
+        
+        if ( in_array( $element->get_type(), [ "Corner Left", "T-Junction" ] ) )
+        {
+            if ( $point->get_direction() == heading_north_east ) $direction = heading_west_north;
+            if ( $point->get_direction() == heading_east_south ) $direction = heading_north_east;
+            if ( $point->get_direction() == heading_south_west ) $direction = heading_east_south;
+            if ( $point->get_direction() == heading_west_north ) $direction = heading_south_west;
 
-                if ( $point->get_direction() == heading_west_north )
-                {
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y() - $element->get_height(), heading_north_east ) );
-                    array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $element->get_width() / 2, heading_south_west ) );
-                }
-                break;
+            if ( $direction == heading_north_east || $direction == heading_south_west )
+            {
+                $pos_x = $point->get_pos_x();
+                $pos_y = $point->get_pos_y() + $direction[ 1 ];
+            }
+            else
+            {
+                $pos_x = $point->get_pos_x() + $direction[ 0 ];
+                $pos_y = $point->get_pos_y();
+            }
 
-            case "Corner Right":
-                if ( $point->get_direction() == heading_north_east )
-                {
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width(), $point->get_pos_y() - $element->get_height() / 2, heading_east_south ) );
-                }
+            array_push( $points, new point( $pos_x, $pos_y, $direction ) );
+        }
+        
+        if ( in_array( $element->get_type(), [ "Passage 1 section", "Passage 2 sections", "Passage 3 sections", "Stairs Start", "Room Large", "Room Small", "Room Revolving" ] ) )
+        {
+            if ( $point->get_direction() == heading_north_east || $point->get_direction() == heading_south_west )
+            {
+                $pos_x = $point->get_pos_x();
+                $pos_y = $point->get_pos_y() + ( $element->get_height() * $point->get_direction()[ 1 ] );
+            }
+            else
+            {
+                $pos_x = $point->get_pos_x() + ( $element->get_width() * $point->get_direction()[ 0 ] );
+                $pos_y = $point->get_pos_y();
+            }
 
-                if ( $point->get_direction() == heading_east_south )
-                {
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y() + $element->get_height(), heading_south_west ) );
-                }
-
-                if ( $point->get_direction() == heading_south_west )
-                {
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width(), $point->get_pos_y() + $element->get_height() / 2, heading_west_north ) );
-                }
-
-                if ( $point->get_direction() == heading_west_north )
-                {
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y() - $element->get_height(), heading_north_east ) );
-                }
-                break;
-
-            case "Corner Left":
-                if ( $point->get_direction() == heading_north_east )
-                {
-                    array_push( $points, new point( $point->get_pos_x() - $element->get_width() / 2, $point->get_pos_y(), heading_west_north ) );
-                }
-
-                if ( $point->get_direction() == heading_east_south )
-                {
-                    array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() - $element->get_height() / 2, heading_north_east ) );
-                }
-
-                if ( $point->get_direction() == heading_south_west )
-                {
-                    array_push( $points, new point( $point->get_pos_x() + $element->get_width() / 2, $point->get_pos_y(), heading_east_south ) );
-                }
-
-                if ( $point->get_direction() == heading_west_north )
-                {
-                    array_push( $points, new point( $point->get_pos_x(), $point->get_pos_y() + $element->get_width() / 2, heading_south_west ) );
-                }
-                break;
-
-            case "Dead End":
-            case "Stairs Down":
-            case "Stairs Out":
-                $points = array();
-                break;
-
-            default:
-                if ( $point->get_direction() == heading_north_east || $point->get_direction() == heading_south_west )
-                {
-                    $pos_x = $point->get_pos_x();
-                    $pos_y = $point->get_pos_y() + ( $element->get_height() * $point->get_direction()[ 1 ] );
-                }
-                else
-                {
-                    $pos_x = $point->get_pos_x() + ( $element->get_width() * $point->get_direction()[ 0 ] );
-                    $pos_y = $point->get_pos_y();
-                }
-
-                array_push( $points, new point( $pos_x, $pos_y, $point->get_direction() ) );
-                break;
+            array_push( $points, new point( $pos_x, $pos_y, $point->get_direction() ) );
         }
 
         return $points;

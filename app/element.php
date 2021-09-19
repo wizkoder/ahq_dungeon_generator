@@ -1,18 +1,18 @@
 <?php
 // elements [ name, widht, height, symbol ]
-const element_passage_one = [ "Passage 1 section", 5, 2, "_" ];
-const element_passage_two = [ "Passage 2 sections", 10, 2, "_" ];
-const element_passage_three = [ "Passage 3 sections", 15, 2, "_" ];
-const element_t_junction = [ "T-Junction", 2, 2, "t" ];
-const element_dead_end = [ "Dead End", 5, 2, "e" ];
-const element_corner_right = [ "Corner Right", 2, 2, "r" ];
-const element_corner_left = [ "Corner Left", 2, 2, "l" ];
-const element_stairs_start = [ "Stairs Start", 2, 2, "s" ];
-const element_stairs_down = [ "Stairs Down", 2, 2, "d" ];
-const element_stairs_out = [ "Stairs Out", 2, 2, "o" ];
-const element_room_large = [ "Room Large", 10, 5, "R" ];
-const element_room_small = [ "Room Small", 5, 5, "R" ];
-const element_room_revolving = [ "Room Revolving", 5, 5, "R" ];
+const element_passage_one = [ "Passage 1 section", 5, 2, "_", [] ];
+const element_passage_two = [ "Passage 2 sections", 10, 2, "_", [] ];
+const element_passage_three = [ "Passage 3 sections", 15, 2, "_", [] ];
+const element_t_junction = [ "T-Junction", 2, 2, "t", [] ];
+const element_dead_end = [ "Dead End", 5, 2, "e", [] ];
+const element_corner_right = [ "Corner Right", 2, 2, "r", [] ];
+const element_corner_left = [ "Corner Left", 2, 2, "l", [] ];
+const element_stairs_start = [ "Stairs Start", 2, 2, "s", [] ];
+const element_stairs_down = [ "Stairs Down", 2, 2, "d", [] ];
+const element_stairs_out = [ "Stairs Out", 2, 2, "o", [] ];
+const element_room_large = [ "Room Large", 10, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
+const element_room_small = [ "Room Small", 5, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
+const element_room_revolving = [ "Room Revolving", 5, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
 
 class element
 {
@@ -22,13 +22,15 @@ class element
     public int $height;
     public array $direction;
     public array $tiles;
+    public array $segments;
     public string $feature;
 
     function __construct( array $element, array $direction )
     {
         $this->type = $element[ 0 ];
+        $this->direction = $direction;
 
-        if ( $direction == heading_north_east || $direction == heading_south_west )
+        if ( $this->direction == heading_north_east || $this->direction == heading_south_west )
         {
             $this->width = $element[ 2 ];
             $this->height = $element[ 1 ];
@@ -47,7 +49,7 @@ class element
             }
         }
 
-        $this->direction = $direction;
+        $this->segments = $element[ 4 ];
     }
 
     // Methods
@@ -114,6 +116,77 @@ class element
     function get_tiles()
     {
         return $this->tiles;
+    }
+
+    function get_segment( int $pos_x, int $pos_y, array $direction )
+    {
+        $segment = $this->get_tile( $pos_x, $pos_y );
+
+        if ( $direction == heading_north_east )
+        {
+            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, north-east
+            {
+                if ( $pos_x == 0 ) $array_y = 0;
+                elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 2;
+                else $array_y = 1;
+
+                if ( $pos_y == 0 ) $array_x = 2;
+                elseif ( $pos_y == ( $this->height - 1 ) ) $array_x = 0;
+                else $array_x = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+        }
+
+        if ( $direction == heading_east_south )
+        {
+            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, east-south
+            {
+                if ( $pos_x == 0 ) $array_y = 0;
+                elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 2;
+                else $array_y = 1;
+
+                if ( $pos_y == 0 ) $array_x = 0;
+                elseif ( $pos_y == ( $this->height - 1 ) ) $array_x = 2;
+                else $array_x = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+        }
+
+        if ( $direction == heading_south_west )
+        {
+            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, south-west
+            {
+                if ( $pos_x == 0 ) $array_y = 2;
+                elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
+                else $array_y = 1;
+
+                if ( $pos_y == 0 ) $array_x = 0;
+                elseif ( $pos_y == ( $this->height - 1 ) ) $array_x = 2;
+                else $array_x = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+        }
+
+        if ( $direction == heading_west_north )
+        {
+            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, west-north
+            {
+                if ( $pos_x == 0 ) $array_y = 2;
+                elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
+                else $array_y = 1;
+
+                if ( $pos_y == 0 ) $array_x = 2;
+                elseif ( $pos_y == ( $this->height - 1 ) ) $array_x = 0;
+                else $array_x = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+        }
+
+        return $segment;
     }
 
     function set_feature( string $feature)

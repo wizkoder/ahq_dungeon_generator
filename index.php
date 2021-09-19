@@ -5,15 +5,15 @@ require_once "app/element.php";
 require_once "app/dungeon.php";
 require_once "app/dice.php";
 
-const dungeon_size = 50;
+const dungeon_size = 100;
 const dungeon_start_x = dungeon_size / 2;
 const dungeon_start_y = dungeon_size / 2;
-const dungeon_tile_size = 30;
+const dungeon_tile_size = 20;
 const dungeon_with_grid = false;
 const dungeon_as_ascii = false;
 
 // init dungeon
-$console = new console();
+$console = console::getInstance();
 $dice = new dice();
 $dungeon = new dungeon( dungeon_size, dungeon_size, dungeon_type_nothing );
 $points[] = new point( dungeon_start_x, dungeon_start_y, heading_south_west );
@@ -140,27 +140,17 @@ $tiles = $dungeon->get_tiles();
     <title>Advanced Heroquest Dungeon Generator</title>
     <?php if ( dungeon_as_ascii ) { ?>
     <style>
-        :root {
-            --tile-size: <?= dungeon_tile_size ?>px;
-        }
-
         .dungeon {
             font-family: monospace, monospace;
-            font-size: var( --tile-size ) / 1.5;
+            font-size: <?= dungeon_tile_size / 1.5 ?>px;
         }
     </style>
     <?php } else { ?>
     <style>
-        :root {
-            --tile-size: <?= dungeon_tile_size ?>px;
-            --grid-rows: <?= count( $tiles ) ?>;
-            --grid-columns: <?= count( $tiles[ 0 ] ) ?>;
-        }
-
         .dungeon {
             display: grid;
-            grid-template-rows: repeat( var( --grid-rows ), var( --tile-size ) );
-            grid-template-columns: repeat( var( --grid-columns ), var( --tile-size ) );
+            grid-template-rows: repeat( <?= count( $tiles ) ?>, <?= dungeon_tile_size ?>px );
+            grid-template-columns: repeat( <?= count( $tiles[ 0 ] ) ?>, <?= dungeon_tile_size ?>px );
         }
 
         .tile {
@@ -169,19 +159,19 @@ $tiles = $dungeon->get_tiles();
         }
 
         .img {
-            width: var( --tile-size );
-            height: var( --tile-size );
+            width: <?= dungeon_tile_size ?>px;
+            height: <?= dungeon_tile_size ?>px;
         }
 
         .text {
             font-family: monospace, monospace;
-            font-size: var( --tile-size ) / 1.5;
+            font-size: <?= dungeon_tile_size / 1.5 ?>px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: black;
-            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+            color: white;
+            text-shadow: -1px -1px 0 black, 0 -1px 0 black, 1px -1px 0 black, 1px 0 0 black, 1px 1px 0 black, 0 1px 0 black, -1px 1px 0 black, -1px 0 0 black;
         }
     </style>
     <?php } ?>
