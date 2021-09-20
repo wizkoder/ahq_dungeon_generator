@@ -1,18 +1,35 @@
 <?php
 // elements [ name, widht, height, symbol ]
-const element_passage_one = [ "Passage 1 section", 5, 2, "_", [] ];
-const element_passage_two = [ "Passage 2 sections", 10, 2, "_", [] ];
-const element_passage_three = [ "Passage 3 sections", 15, 2, "_", [] ];
-const element_t_junction = [ "T-Junction", 2, 2, "t", [] ];
+const element_passage_one = [ "Passage 1 section", 5, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
+const element_passage_two = [ "Passage 2 sections", 10, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
+const element_passage_three = [ "Passage 3 sections", 15, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
+const element_t_junction = [ "T-Junction", 2, 2, "t", [
+    [
+        [ "┑", "─" ],
+        [ "┏", "─" ]
+    ],
+    [
+        [ "┘", "┑" ],
+        [ "┃", "┃" ]
+    ],
+    [
+        [ "┖", "━" ],
+        [ "┘", "━" ]
+    ],
+    [
+        [ "┏", "┖" ],
+        [ "│", "│" ]
+    ]
+] ];
 const element_dead_end = [ "Dead End", 5, 2, "e", [] ];
-const element_corner_right = [ "Corner Right", 2, 2, "r", [] ];
-const element_corner_left = [ "Corner Left", 2, 2, "l", [] ];
+const element_corner_right = [ "Corner Right", 2, 2, "r", [ [ [ "│", "┌" ], [ "┏", "─" ] ], [ [ "─", "┑" ], [ "┒", "┃" ] ], [ [ "┃", "┛" ], [ "┘", "━" ] ], [ [ "━", "┖" ], [ "┕", "│" ] ] ] ];
+const element_corner_left = [ "Corner Left", 2, 2, "l", [ [ [ "┑", "─" ], [ "┃", "┒" ] ], [ [ "┘", "━" ], [ "┃", "┛" ] ], [ [ "┖", "━" ], [ "│", "┕" ] ], [ [ "┏", "─" ], [ "│", "┌" ] ] ] ];
 const element_stairs_start = [ "Stairs Start", 2, 2, "s", [] ];
 const element_stairs_down = [ "Stairs Down", 2, 2, "d", [] ];
 const element_stairs_out = [ "Stairs Out", 2, 2, "o", [] ];
-const element_room_large = [ "Room Large", 10, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
-const element_room_small = [ "Room Small", 5, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
-const element_room_revolving = [ "Room Revolving", 5, 5, "R", [ [ "┌", "─", "┐" ], [ "│", "_", "│" ], [ "└", "─", "┘" ] ] ];
+const element_room_large = [ "Room Large", 10, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
+const element_room_small = [ "Room Small", 5, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
+const element_room_revolving = [ "Room Revolving", 5, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
 
 class element
 {
@@ -124,7 +141,7 @@ class element
 
         if ( $direction == heading_north_east )
         {
-            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, north-east
+            if ( str_starts_with( $this->get_type(), "Room" ) )
             {
                 if ( $pos_x == 0 ) $array_y = 0;
                 elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 2;
@@ -135,12 +152,27 @@ class element
                 else $array_x = 1;
 
                 $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            {
+                $array_x = 1;
+
+                if ( $pos_x == 0 ) $array_y = 0;
+                else $array_y = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            {
+                $segment = $this->segments[ 0 ][ $pos_x ][ $pos_y ];
             }
         }
 
         if ( $direction == heading_east_south )
         {
-            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, east-south
+            if ( str_starts_with( $this->get_type(), "Room" ) )
             {
                 if ( $pos_x == 0 ) $array_y = 0;
                 elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 2;
@@ -152,11 +184,26 @@ class element
 
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
+
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            {
+                $array_x = 0;
+
+                if ( $pos_y == 0 ) $array_y = 0;
+                else $array_y = 1;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            {
+                $segment = $this->segments[ 1 ][ $pos_x ][ $pos_y ];
+            }
         }
 
         if ( $direction == heading_south_west )
         {
-            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, south-west
+            if ( str_starts_with( $this->get_type(), "Room" ) )
             {
                 if ( $pos_x == 0 ) $array_y = 2;
                 elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
@@ -168,11 +215,26 @@ class element
 
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
+
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            {
+                $array_x = 1;
+
+                if ( $pos_x == 0 ) $array_y = 1;
+                else $array_y = 0;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            {
+                $segment = $this->segments[ 2 ][ $pos_x ][ $pos_y ];
+            }
         }
 
         if ( $direction == heading_west_north )
         {
-            if ( str_starts_with( $this->get_type(), "Room" )  ) // room, horizontal / vertical, west-north
+            if ( str_starts_with( $this->get_type(), "Room" ) )
             {
                 if ( $pos_x == 0 ) $array_y = 2;
                 elseif ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
@@ -183,6 +245,21 @@ class element
                 else $array_x = 1;
 
                 $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            {
+                $array_x = 0;
+
+                if ( $pos_y == 0 ) $array_y = 1;
+                else $array_y = 0;
+
+                $segment = $this->segments[ $array_x ][ $array_y ];
+            }
+
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            {
+                $segment = $this->segments[ 3 ][ $pos_x ][ $pos_y ];
             }
         }
 

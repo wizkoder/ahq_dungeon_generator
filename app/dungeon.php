@@ -1,6 +1,6 @@
 <?php
 
-const dungeon_type_nothing = ".";
+const dungeon_type_nothing = "·";
 
 class dungeon
 {

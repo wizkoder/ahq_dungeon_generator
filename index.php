@@ -5,12 +5,12 @@ require_once "app/element.php";
 require_once "app/dungeon.php";
 require_once "app/dice.php";
 
-const dungeon_size = 100;
+const dungeon_size = 200;
 const dungeon_start_x = dungeon_size / 2;
 const dungeon_start_y = dungeon_size / 2;
-const dungeon_tile_size = 20;
+const dungeon_tile_size = 30;
 const dungeon_with_grid = false;
-const dungeon_as_ascii = false;
+const dungeon_as_ascii = true;
 
 // init dungeon
 $console = console::getInstance();
@@ -140,13 +140,23 @@ $tiles = $dungeon->get_tiles();
     <title>Advanced Heroquest Dungeon Generator</title>
     <?php if ( dungeon_as_ascii ) { ?>
     <style>
+        @font-face {
+            font-family: ahq;
+            src: url( font/ahq.ttf);
+        }
+
         .dungeon {
-            font-family: monospace, monospace;
-            font-size: <?= dungeon_tile_size / 1.5 ?>px;
+            font-family: ahq, monospace;
+            font-size: <?= dungeon_tile_size / 2 ?>px;
         }
     </style>
     <?php } else { ?>
     <style>
+        @font-face {
+            font-family: ahq;
+            src: url( font/ahq.ttf);
+        }
+
         .dungeon {
             display: grid;
             grid-template-rows: repeat( <?= count( $tiles ) ?>, <?= dungeon_tile_size ?>px );
@@ -164,8 +174,8 @@ $tiles = $dungeon->get_tiles();
         }
 
         .text {
-            font-family: monospace, monospace;
-            font-size: <?= dungeon_tile_size / 1.5 ?>px;
+            font-family: ahq, monospace;
+            font-size: <?= dungeon_tile_size / 2 ?>px;
             position: absolute;
             top: 50%;
             left: 50%;
