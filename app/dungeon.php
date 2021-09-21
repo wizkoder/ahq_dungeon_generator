@@ -149,7 +149,7 @@ class dungeon
         return $points;
     }
 
-    function get_tiles( bool $with_grid = false )
+    function get_tiles( bool $with_grid )
     {
         $tiles = $this->grid;
 

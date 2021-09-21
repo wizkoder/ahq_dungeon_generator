@@ -1,86 +1,134 @@
 <?php
-// elements [ name, widht, height, symbol, segments ] -> http://www.kreativekorp.com/software/fonts/ksquare.shtml
-const element_passage_one = [ "Passage 1 section", 5, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
-const element_passage_two = [ "Passage 2 sections", 10, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
-const element_passage_three = [ "Passage 3 sections", 15, 2, "_", [ [ "─", "━" ], [ "│", "┃" ] ] ];
-const element_t_junction = [ "T-Junction", 2, 2, "t", [ [ [ "┑", "─" ], [ "┏", "─" ] ], [ [ "┘", "┑" ], [ "┃", "┃" ] ], [ [ "┖", "━" ], [ "┘", "━" ] ], [ [ "┏", "┖" ], [ "│", "│" ] ] ] ];
-const element_dead_end = [ "Dead End", 5, 2, "e", [
-    [
-        [ "│", "┃" ],
-        [ "┌", "┒" ]
-    ],
-    [
-        [ "─", "┐" ],
-        [ "━", "┙" ]
-    ],
-    [
-        [ "└", "┚" ],
-        [ "│", "┃" ]
-    ],
-    [
-        [ "┌", "─" ],
-        [ "┕", "━" ]
-    ]
+// segments -> http://www.kreativekorp.com/software/fonts/ksquare.shtml
+const segments = [
+    "border_top_left" => [ "┌", "┍", "┎", "┏" ],
+    "border_top" => [ "─" ],
+    "border_top_right" => [ "┐", "┑", "┒", "┓"],
+    "border_right" => [ "┃" ],
+    "border_bottom_right" => [ "┘", "┙", "┚", "┛" ],
+    "border_bottom" => [ "━" ],
+    "border_bottom_left" => [ "└", "┕", "┖", "┗" ],
+    "border_left" => [ "│" ],
+];
+// elements [ name, widht, height, symbol, segments ]
+const element_passage_one = [ "Passage 1 section", 5, 2, "_", [
+    [ "─", "━" ],
+    [ "│", "┃" ]
 ] ];
-const element_corner_right = [ "Corner Right", 2, 2, "r", [ [ [ "│", "┌" ], [ "┏", "─" ] ], [ [ "─", "┑" ], [ "┒", "┃" ] ], [ [ "┃", "┛" ], [ "┘", "━" ] ], [ [ "━", "┖" ], [ "┕", "│" ] ] ] ];
-const element_corner_left = [ "Corner Left", 2, 2, "l", [ [ [ "┑", "─" ], [ "┃", "┒" ] ], [ [ "┘", "━" ], [ "┃", "┛" ] ], [ [ "┖", "━" ], [ "│", "┕" ] ], [ [ "┏", "─" ], [ "│", "┌" ] ] ] ];
-const element_stairs_start = [ "Stairs Start", 2, 2, "s", [
-    [
-        [ "s", "p" ],
-        [ "", "" ]
-    ],
-    [
-        [ "s", "" ],
-        [ "p", "" ]
-    ],
-    [
-        [ "", "" ],
-        [ "s", "p" ]
-    ],
-    [
-        [ "", "s" ],
-        [ "", "p" ]
-    ]
+const element_passage_two = [ "Passage 2 sections", 10, 2, "_", [
+    [ "─", "━" ],
+    [ "│", "┃" ]
 ] ];
-const element_stairs_down = [ "Stairs Down", 2, 2, "d", [
-    [
-        [ "", "" ],
-        [ "s", "d" ]
-    ],
-    [
-        [ "", "s" ],
-        [ "", "d" ]
-    ],
-    [
-        [ "s", "d" ],
-        [ "", "" ]
-    ],
-    [
-        [ "s", "" ],
-        [ "d", "" ]
-    ]
+const element_passage_three = [ "Passage 3 sections", 15, 2, "_", [
+    [ "─", "━" ],
+    [ "│", "┃" ]
 ] ];
-const element_stairs_out = [ "Stairs Out", 2, 2, "o", [
-    [
-        [ "", "" ],
-        [ "s", "o" ]
-    ],
-    [
-        [ "", "s" ],
-        [ "", "o" ]
-    ],
-    [
-        [ "s", "o" ],
-        [ "", "" ]
-    ],
-    [
-        [ "s", "" ],
-        [ "o", "" ]
-    ]
+const element_t_junction = [ "T-Junction", 2, 2, "t", [ [
+    [ "┑", "─" ],
+    [ "┏", "─" ]
+], [
+    [ "┘", "┑" ],
+    [ "┃", "┃" ]
+], [
+    [ "┖", "━" ],
+    [ "┘", "━" ]
+], [
+    [ "┏", "┖" ],
+    [ "│", "│" ]
+] ] ];
+const element_dead_end = [ "Dead End", 5, 2, "e", [ [
+    [ "│", "┃" ],
+    [ "┌", "┒" ]
+], [
+    [ "─", "┐" ],
+    [ "━", "┙" ]
+], [
+    [ "└", "┚" ],
+    [ "│", "┃" ]
+], [
+    [ "┌", "─" ],
+    [ "┕", "━" ]
+] ] ];
+const element_corner_right = [ "Corner Right", 2, 2, "r", [ [
+    [ "│", "┌" ],
+    [ "┏", "─" ]
+], [
+    [ "─", "┑" ],
+    [ "┒", "┃" ]
+], [
+    [ "┃", "┛" ],
+    [ "┘", "━" ]
+], [
+    [ "━", "┖" ],
+    [ "┕", "│" ]
+] ] ];
+const element_corner_left = [ "Corner Left", 2, 2, "l", [ [
+    [ "┑", "─" ],
+    [ "┃", "┒" ]
+], [
+    [ "┘", "━" ],
+    [ "┃", "┛" ]
+], [
+    [ "┖", "━" ],
+    [ "│", "┕" ]
+], [
+    [ "┏", "─" ],
+    [ "│", "┌" ]
+] ] ];
+const element_stairs_start = [ "Stairs Start", 2, 2, "s", [ [
+    [ "s", "p" ],
+    [ "", "" ]
+], [
+    [ "s", "" ],
+    [ "p", "" ]
+], [
+    [ "", "" ],
+    [ "s", "p" ]
+], [
+    [ "", "s" ],
+    [ "", "p" ]
+] ] ];
+const element_stairs_down = [ "Stairs Down", 2, 2, "d", [ [
+    [ "", "" ],
+    [ "s", "d" ]
+], [
+    [ "", "s" ],
+    [ "", "d" ]
+], [
+    [ "s", "d" ],
+    [ "", "" ]
+], [
+    [ "s", "" ],
+    [ "d", "" ]
+] ] ];
+const element_stairs_out = [ "Stairs Out", 2, 2, "o", [ [
+    [ "", "" ],
+    [ "s", "o" ]
+], [
+    [ "", "s" ],
+    [ "", "o" ]
+], [
+    [ "s", "o" ],
+    [ "", "" ]
+], [
+    [ "s", "" ],
+    [ "o", "" ]
+] ] ];
+const element_room_large = [ "Room Large", 10, 5, "R", [
+    [ "┌", "─", "┒" ],
+    [ "│", "&nbsp;", "┃" ],
+    [ "┕", "━", "┛" ]
 ] ];
-const element_room_large = [ "Room Large", 10, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
-const element_room_small = [ "Room Small", 5, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
-const element_room_revolving = [ "Room Revolving", 5, 5, "R", [ [ "┌", "─", "┒" ], [ "│", "&nbsp;", "┃" ], [ "┕", "━", "┛" ] ] ];
+const element_room_small = [ "Room Small", 5, 5, "R", [
+    [ "┌", "─", "┒" ],
+    [ "│", "&nbsp;", "┃" ],
+    [ "┕", "━", "┛" ]
+] ];
+const element_room_revolving = [ "Room Revolving", 5, 5, "R", [
+    [ "┌", "─", "┒" ],
+    [ "│", "&nbsp;", "┃" ],
+    [ "┕", "━", "┛" ]
+] ];
 
 class element
 {
@@ -205,7 +253,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" && dungeon_as_ascii )
             {
                 $array_x = 1;
 
@@ -215,7 +263,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) )
+            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) && dungeon_as_ascii )
             {
                 if ( $pos_x == ( $this->width - 1 ) ) $array_y = 1;
                 else $array_y = 0;
@@ -226,10 +274,11 @@ class element
                 $segment = $this->segments[ 0 ][ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) && dungeon_as_ascii )
             {
                 $segment = $this->segments[ 0 ][ $pos_x ][ $pos_y ];
             }
+
         }
 
         if ( $direction == heading_east_south )
@@ -247,7 +296,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" && dungeon_as_ascii )
             {
                 $array_x = 0;
 
@@ -257,7 +306,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) )
+            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) && dungeon_as_ascii )
             {
                 if ( $pos_x == ( $this->width - 1 ) ) $array_y = 1;
                 else $array_y = 0;
@@ -268,7 +317,7 @@ class element
                 $segment = $this->segments[ 1 ][ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) && dungeon_as_ascii )
             {
                 $segment = $this->segments[ 1 ][ $pos_x ][ $pos_y ];
             }
@@ -289,7 +338,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" && dungeon_as_ascii )
             {
                 $array_x = 1;
 
@@ -299,7 +348,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) )
+            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) && dungeon_as_ascii )
             {
                 if ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
                 else $array_y = 1;
@@ -310,7 +359,7 @@ class element
                 $segment = $this->segments[ 2 ][ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) && dungeon_as_ascii )
             {
                 $segment = $this->segments[ 2 ][ $pos_x ][ $pos_y ];
             }
@@ -331,7 +380,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" )
+            if ( str_starts_with( $this->get_type(), "Passage" ) && $segment == "_" && dungeon_as_ascii )
             {
                 $array_x = 0;
 
@@ -341,7 +390,7 @@ class element
                 $segment = $this->segments[ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) )
+            if ( in_array( $this->get_type(), [ "Dead End", "Stairs Start", "Stairs Down", "Stairs Out" ] ) && dungeon_as_ascii )
             {
                 if ( $pos_x == ( $this->width - 1 ) ) $array_y = 0;
                 else $array_y = 1;
@@ -352,7 +401,7 @@ class element
                 $segment = $this->segments[ 3 ][ $array_x ][ $array_y ];
             }
 
-            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) )
+            if ( in_array( $this->get_type(), [ "Corner Right", "Corner Left", "T-Junction" ] ) && dungeon_as_ascii )
             {
                 $segment = $this->segments[ 3 ][ $pos_x ][ $pos_y ];
             }

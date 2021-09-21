@@ -5,12 +5,12 @@ require_once "app/element.php";
 require_once "app/dungeon.php";
 require_once "app/dice.php";
 
-const dungeon_size = 200;
+const dungeon_size = 100;
 const dungeon_start_x = dungeon_size / 2;
 const dungeon_start_y = dungeon_size / 2;
-const dungeon_tile_size = 30;
+const dungeon_tile_size = 24;
 const dungeon_with_grid = false;
-const dungeon_as_ascii = true;
+const dungeon_as_ascii = false;
 
 // init dungeon
 $console = console::getInstance();
@@ -110,7 +110,7 @@ while ( $point = array_pop( $points ) )
                 if ( $roll >= 20 && $roll <= 22 ) $passage_end = new element( element_stairs_out, $point->get_direction() ); // Stairs Out
                 if ( $roll >= 23 && $roll <= 24 ) $passage_end = new element( element_t_junction, $point->get_direction() ); // Stairs Out
 
-                $passage_end_placeable = $dungeon->is_element_placable( $passage_end, $point, true );
+                $passage_end_placeable = $dungeon->is_element_placable( $passage_end, $point, ( $roll >= 4 && $roll <= 8 ) ? false : true );
 
                 if ( $passage_end_placeable )
                 {
@@ -129,7 +129,7 @@ while ( $point = array_pop( $points ) )
 }
 // END generate dungeon
 
-$tiles = $dungeon->get_tiles();
+$tiles = $dungeon->get_tiles( dungeon_with_grid );
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -157,6 +157,11 @@ $tiles = $dungeon->get_tiles();
             src: url( font/ahq.ttf);
         }
 
+        :root {
+            --tile-border: <?= dungeon_tile_size / 8 ?>px solid rgba( 0, 0, 0, 0.5 );
+            --text-shadow: 0 0 <?= dungeon_tile_size / 8 ?>px black;
+        }
+
         .dungeon {
             display: grid;
             grid-template-rows: repeat( <?= count( $tiles ) ?>, <?= dungeon_tile_size ?>px );
@@ -166,6 +171,66 @@ $tiles = $dungeon->get_tiles();
         .tile {
             position: relative;
             text-align: center;
+        }
+
+        .tile.border_top_left::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-top: var( --tile-border );
+            border-left: var( --tile-border );
+        }
+
+        .tile.border_top::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-top: var( --tile-border );
+        }
+
+        .tile.border_top_right::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-top: var( --tile-border );
+            border-right: var( --tile-border );
+        }
+
+        .tile.border_right::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-right: var( --tile-border );
+        }
+
+        .tile.border_bottom_right::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-bottom: var( --tile-border );
+            border-right: var( --tile-border );
+        }
+
+        .tile.border_bottom::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-bottom: var( --tile-border );
+        }
+
+        .tile.border_bottom_left::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-bottom: var( --tile-border );
+            border-left: var( --tile-border );
+        }
+
+        .tile.border_left::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border-left: var( --tile-border );
         }
 
         .img {
@@ -181,7 +246,7 @@ $tiles = $dungeon->get_tiles();
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            text-shadow: -1px -1px 0 black, 0 -1px 0 black, 1px -1px 0 black, 1px 0 0 black, 1px 1px 0 black, 0 1px 0 black, -1px 1px 0 black, -1px 0 0 black;
+            text-shadow: var( --text-shadow ), var( --text-shadow ), var( --text-shadow ), var( --text-shadow ), var( --text-shadow );
         }
     </style>
     <?php } ?>
@@ -214,22 +279,24 @@ else
     {
         foreach ( $row as $cell )
         {
-            echo '<div class="tile">';
+            $border = false;
 
-            switch ( $cell )
+            foreach ( segments as $type => $segment ) if ( in_array( $cell, $segment ) ) $border = $type;
+
+            echo '<div class="tile' . ( $border ? ' ' . $border : '' ) . '">';
+
+            if ( $cell == dungeon_type_nothing )
             {
-                case dungeon_type_nothing:
-                    echo '<img alt="tile" class="img" src="img/tile_00.png">';
-                    break;
-
-                case '_':
-                    echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
-                    break;
-
-                default:
-                    echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
-                    echo '<span class="text">' . $cell . '</span>';
-                    break;
+                echo '<img alt="tile" class="img" src="img/tile_00.png">';
+            }
+            elseif ( $cell != '_' && !$border )
+            {
+                echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
+                echo '<span class="text">' . $cell . '</span>';
+            }
+            else
+            {
+                echo '<img alt="tile" class="img" src="img/tile_0' . random_int( 1, 8 ) . '.png">';
             }
 
             echo '</div>';
